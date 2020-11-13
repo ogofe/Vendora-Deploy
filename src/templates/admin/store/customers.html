@@ -1,0 +1,119 @@
+{% extends './base.html' %}
+
+{% block content %}
+<style>
+.name{
+    font-size: initial;
+}
+
+.card:hover{
+    box-shadow: 0 2px 15px 0 rgba(0, 0, 0, 0.16), 0 2px 25px 0 rgba(0, 0, 0, 0.12);
+    transition: .5s;
+    cursor: pointer;
+}
+
+.select{
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: max-content;
+}
+.select .check{
+    vertical-align: bottom;
+}
+
+.cta{
+    text-transform: none;
+    position: absolute;
+}
+
+#cta{
+    bottom: 2em;
+    right: 3em;
+}
+
+#all{
+    position: absolute !important;
+    top: 6em;
+    right: 3em;
+}
+</style>
+
+<button id="all" type="button" onclick="selectAll()" class=" cta btn badge blue">Select All</button>
+
+<div class="row mt-5 mb-5">
+    
+    <span  class="mb-4"></span>
+
+<form id="contact-form" name="contacts" method="POST">
+    {% csrf_token %}
+<select hidden multiple name="email" aria-multiline="true" aria-multiselectable="true">
+    {% for person in customers %}
+    <option class="option" value="{{person}}" >
+        <div id="card{{forloop.counter}}" onclick="toggleSelect({{ forloop.counter }})" class="col-md-4 mt-2 col-sm-6 card mr-1 ml-1 col-lg-3 pt-3 pb-3">
+            <span class="badge select p-0"> 
+                <input type="checkbox" id="check{{forloop.counter}}" checked="false" 
+                onclick="perform({{forloop.counter}})" class="check"> 
+            </span>
+            <h4 class="name badge blue-grey p-2 mt-2 font-20" > {{ person.name }} </h4>
+            <h6 class=""> {{ person }} </h6>
+        </div>
+    </option>
+    {% endfor %}
+</select>
+
+</form>
+</div>
+
+<button id="cta" type="submit" formtarget="window" formaction="{% url 'vendor:export-contacts' store.name %}" 
+   form="contact-form" class=" cta btn badge amber">Export &curvearrowright;</button>
+
+{% endblock content %}
+
+{% block active %}
+<script>
+  document.getElementById('customers-link').style.backgroundColor = 'black';
+  document.getElementById('page-main').classList.add('container');
+
+  function toggleSelect(num){
+    let check = document.getElementById(`check${num}`).click()
+  }
+
+  function perform(id){
+    let card = document.getElementById(`card${id}`)
+    let stat = event.target.getAttribute('checked')
+
+    console.log("Status", stat)
+    if (stat === 'false'){
+        stat = true
+        card.classList.add('grey')
+        card.classList.add('white-text')
+        event.target.setAttribute('checked', `${stat}`)
+    }else if (stat === 'true'){
+        stat = false
+        card.classList.remove('grey')
+        card.classList.remove('white-text')
+        event.target.setAttribute('checked', `${stat}`)
+    }
+  }
+
+  options = Array.from(document.querySelectorAll('.option'))
+
+  function selectAll(){
+    accounts = document.querySelectorAll('.check')
+
+    for(var i=0; i < options.length; i++ ){
+        options[i].selected = true
+    }
+
+    for (var i=0; i < accounts.length; i++){
+        if(accounts[i].getAttribute('checked') === 'true'){
+
+        } else{
+            accounts[i].setAttribute('checked', 'true')
+        }
+        console.log('USER', accounts[i].attributes)
+    }
+  }
+</script>
+{% endblock active %}

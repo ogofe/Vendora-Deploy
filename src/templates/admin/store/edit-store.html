@@ -1,0 +1,31 @@
+{% extends './base.html' %}
+{% load static %}
+
+{% block content %}
+
+<button onclick="history.back(-1)" class="btn badge btn-sm green">
+Back
+</button>
+
+<a onclick="history.back(-1)" class="btn badge btn-sm blue">
+Save
+</a>
+
+<div class="main" role="main">
+
+</div>
+
+
+{% endblock content %}
+
+
+
+{% block active %}
+
+<script>
+document.getElementById('store-link').style.backgroundColor = 'black';
+
+</script>
+
+{% endblock active %}
+

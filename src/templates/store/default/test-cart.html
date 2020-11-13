@@ -1,0 +1,108 @@
+ {% extends './base.html' %}
+ {% load static %} 
+
+{% block content %}
+
+    <style>
+                #form1 {
+            display: inline-flex;
+        }
+        
+        #cart-container {
+            margin-top: 7em;
+        }
+        
+        table {
+            margin: 0 10px;
+            margin-top: 7em;
+            border-radius: 5px;
+        }
+        
+        #qty .btn {
+            /* width: fit-content; */
+            padding: .2em .7em;
+        }
+        
+        #qty input {
+            width: 4em;
+        }
+
+        #form-qty {
+            text-align: center;
+        }
+
+        #control-wrapper .btn {
+           padding: 0;
+        }
+
+        @media (max-width: 620px){
+            table{
+                display: block;
+            }
+        }
+    </style>
+
+    <div class="mt-7 container text-center">
+        <div class="text-left">
+            <div id="cart" class=" order-md-2 mb-4">
+                <h4 class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="text-muted">Your cart</span>
+                    <span class="badge badge-secondary badge-pill"> {{ cart.count }} </span>
+                </h4>
+                <ul class="list-group mb-3">
+                    {% for item in items %}
+                    <li id="item" class="list-group-item d-flex justify-content-between lh-condensed">
+                        <div id="item-wrapper" class="d-flex">
+                            <div>
+                                <h6 class="my-0"> {{ item.item.name }} </h6>
+                                <small class="text-muted">{{ item.item.description }}</small>
+                            </div>
+                            <span class="text-muted pl-1 pr-1">${{ item.item.price }}</span>
+                        </div>
+
+                        <div id="control-wrapper">
+                            <div class="btn-group">
+                                <a class="btn btn-blue " href=""> - </a>
+                                <form method="POST" id="qty" action="">
+                                    {% csrf_token %}
+                                    <input type="number" id="form-qty" name="quantity" value={{item.quantity}} title="
+                                Hit enter when done.
+                                ">
+                                </form>
+                                <a class="btn btn-danger" href=""> + </a>
+                                <a class="btn btn-dark" href=""> &times; </a>
+                            </div>
+                        </div>
+                    </li>
+                    {% endfor %}
+
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span>Total ({{ store.currency.code }})</span>
+                        <strong>{{ store.currency.symbol }}{{cart.total}}</strong>
+                    </li>
+                </ul>
+
+                {% comment %}
+                <form class="card p-2">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Promo code">
+                        <div class="input-group-append">
+                            <button type="submit" class="btn btn-secondary">Redeem</button>
+                        </div>
+                    </div>
+                </form> {% endcomment %}
+            </div>
+        </div>
+
+        <a id="checkout" class="btn bg-primary">
+            Continue Shopping
+        </a>
+
+        <a id="checkout" href="" class="btn btn-cyan">
+            Proceed to ckeckout
+        </a>
+    </div>
+
+    {% comment %} {% include 'shopper/stores/footer.html' %} {% endcomment %}
+
+{% endblock content %}

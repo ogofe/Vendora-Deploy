@@ -1,0 +1,147 @@
+{% extends './base.html' %}
+
+{% block content %}
+
+<style>
+
+@media(max-width:515px){
+  .chart{
+    width: 456px !important;
+    height: 324px !important;
+  }
+}
+
+</style>
+
+  <div class="row row-cols-2 text-center">
+    <canvas class="col-lg-6 col-12 text-center chart my-4" id="overallSalesChart" width="750em" height="500em"></canvas>
+    <canvas class="col-lg-6 col-12 chart my-4" id="daysSalesChart" width="750em" height="500em"></canvas>
+  </div>
+{% endblock content %}
+
+{% block charts %}
+<script>
+(function chart1(){
+  'use strict'
+
+  //feather.replace()
+
+  // Graphs
+  var ctx = document.getElementById('overallSalesChart')
+  // eslint-disable-next-line no-unused-vars
+  var myChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: [
+        'Sunday',
+        'Monday',
+        'Tuesday',
+        'Wednesday',
+        'Thursday',
+        'Friday',
+        'Saturday'
+      ],
+      colors:[
+        'red',
+      ],
+      title: 'Title',
+      datasets: [{
+        data: [
+          115,
+          25,
+          83,
+          40,
+          49,
+          20,
+          34
+        ],
+        backgroundColor: '#2bbbad',
+        borderWidth: 0,
+      }]
+    },
+    options: {
+      scales: {
+        yAxes: [{
+          ticks: {
+            beginAtZero: false
+          }
+        }]
+      },
+      legend: {
+        display: true,
+        title: 'Sales'
+      }
+    }
+  })
+}())
+
+(function chart2(){
+  'use strict'
+
+  //feather.replace()
+
+  // Graphs
+  var ctx = document.getElementById('daysSalesChart')
+  // eslint-disable-next-line no-unused-vars
+  var myChart = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: [
+        'Sunday',
+        'Monday',
+        'Tuesday',
+        'Wednesday',
+        'Thursday',
+        'Friday',
+        'Saturday'
+      ],
+      datasets: [{
+        data: [
+          15,
+          25,
+          83,
+          40,
+          49,
+          2,
+          34
+        ],
+        backgroundColor: '#2bbbad',
+        borderColor: 'red',
+        borderPointCoor: 'red',
+        borderWidth: 0,
+      }]
+    },
+    options: {
+      scales: {
+        yAxes: [{
+          ticks: {
+            beginAtZero: true,
+          },
+          minor: 0,
+          major: 100,
+        }]
+      },
+      legend: {
+        display: true
+      }
+    }
+  })
+}())
+
+document.addEventListener("click", ()=>{
+  return
+}, )
+
+</script>
+{% endblock charts %}
+
+
+{% block active %}
+<script>
+  document.getElementById('dashboard-link').style.backgroundColor = 'black';
+  document.getElementById('page-main').classList.add('container');
+
+</script>
+
+{% endblock active %}
+

@@ -1,0 +1,47 @@
+{% load static %}
+{% load tz %}
+
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="description" content="">
+        <meta name="author" content="Vendora LLC">
+        <title>Error | Unauthorised Access </title>
+
+        <meta name="theme-color" content="#563d7c">
+        <link rel="Stylesheet" href="{% static 'css/global/bootstrap.min.css' %}">
+        <link rel="Stylesheet" href="{% static 'css/store/default/mdb/mdb.min.css' %}">
+    </head>
+
+    <style>
+        #error{
+            height: 100%;
+        }
+    </style>
+
+    <body class="bg-default">
+        <div id="error" class="mt-5 text-center justify-content-center"> 
+            <h2 class="text-white"> Unauthorised Access! </h2>
+            <hr class="m-5">
+            <svg width="5em" height="5em" viewBox="0 0 17 16" class="text-danger bi bi-exclamation-triangle-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5a.905.905 0 0 0-.9.995l.35 3.507a.552.552 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 5zm.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2z"/>
+            </svg>
+            <p class="text-white"> You don't have permissions to enter the store you requested. </p>
+            <button onclick="history.back(-1)" class="btn border border-white btn-default">
+                Return to previous page
+            </button>
+            <br>
+            <a class="mt-5" href="#">
+                Why am I seeing this error?
+            </a>
+            <h6> If this is your store, <a href="{% url 'accounts:login' %}" class="btn btn-black">log into it here.</a>
+        </div>
+
+        <h6 class="text-white-50 mt-3 carousel-caption text-center"> Copyright: 
+        <span class="text-white"> Vendora&trade; </span> 
+            <br>&copy; 2020
+        </h6>
+    </body>
+  

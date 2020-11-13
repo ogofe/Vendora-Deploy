@@ -1,0 +1,162 @@
+.chip{
+    background-color: var(--dark) ;
+    cursor: pointer;
+    border-radius: 1.3px;
+    border: 1px solid white;
+}
+
+.chip:hover{
+    background-color: var(--dark) ;
+}
+
+#controls{
+    position: absolute;
+    top: 3.35em;
+    width: 7.66em;
+    background-color: var(--dark);
+    overflow: hidden;
+    height: 0;
+    text-align: left;
+    padding-left: 10px;
+    transition: .21s;
+    z-index: 3;
+}
+
+.control{
+    color: azure;
+    padding: .5em 0;
+}
+
+#store-name{
+    line-height: 15px;
+    padding-top: 10px;
+}
+
+#page-nav{
+    background-color: #e8e8e8;
+    text-align: left;
+    transition: .5s;
+    overflow-y: hidden;
+    top: 3.8em;
+    height: 0;
+    z-index: 2;
+}
+
+#nav{
+    list-style: none;
+    display: inline;
+}
+
+#nav .nav-item{
+    padding: .7em .5em;
+    display: inline-block;
+}
+
+#nav .nav-link{
+    color: azure;
+    padding: .7em .5em;
+    display: inline-block;
+}
+
+.nav-item:hover{
+    background-color: black;
+}
+
+.item-image{
+    width: 200px;
+    height: 70%;
+    align-self: center;
+}
+
+.confirm-popup{
+    position: fixed !important;
+    animation: fadeIn 1s;
+    left: 30%;
+    top: 40%;
+    padding: 2.5em 1em;
+    max-width: 400px;
+    box-shadow: var(--dark) 1px 1px 5px;
+    transition: fadeOut 1s;
+}
+
+.popup-wrapper{
+    text-align: center;
+    width: 100%;
+}
+
+button.close{
+    top: 7px;
+    position: absolute;
+    right: 15px;
+}
+
+@keyframes fadeIn{
+    from{
+        opacity: 0;
+    }
+    to{
+        opacity: 1;
+    }
+}
+
+@keyframes fadeOut{
+    from{
+        opacity: 1;
+    }
+    to{
+        opacity: 0;
+    }
+}
+
+@media (max-width: 600px){
+    .delete{
+        left: 2.5%;
+        right: 2.5%;
+    }
+}
+@media (max-width: 500px){
+
+    #popup-close{
+        left: 2.5%;
+        right: 2.5%;
+    }
+}
+
+:root::-webkit-scrollbar{
+    width: .5em;
+    background-color: transparent;
+    padding: 0;
+    height: .5em;
+}
+
+::-webkit-scrollbar-track{
+    width: 1em;
+    background-color: rgb(228, 228, 228);
+}
+
+::-webkit-scrollbar-thumb{
+    background-color: rgb(125, 189, 248);
+}
+
+::-webkit-scrollbar-button{
+    width: 1em;
+    background-color: transparent;
+}
+
+::selection{
+    background-color: aqua;
+}
+
+
+::-webkit-file-upload-button{
+    padding: 1em .5em !important;
+    display: none;
+}
+
+.multi {
+    width: 70%;
+    border-radius: 5px;
+    border: 1px solid gray;
+	background: coral;
+	color: white;
+}

@@ -1,0 +1,211 @@
+{% extends './base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    .detail{
+        justify-content: space-between;
+        margin: .3rem 0;
+        margin-top: 1em;
+    }
+
+    .detail .badge{
+        line-height: 1.2;
+        font-size: inherit;
+    }
+
+    #details{
+        padding: .72rem 1em;
+    }
+
+    #tab-btns .btn:hover{
+        box-shadow: inset;
+    }
+
+    .tab{
+        transition: 1s;
+    }
+
+    @media(max-width: 358px){
+        #tabs {
+            position: absolute;
+            top: 6em;
+            left: 1px;
+        }
+    }
+</style>
+
+
+<span id="tabs" class="text-center">
+    <span id="tab-btns" class="btn-group">
+        <button onclick="toggleview(); showTab(0)" class="btn btn-sm badge btn-blue-grey btn-dark">Invoices</button>
+        <button onclick="toggleview(); showTab(1)" class="btn btn-sm badge border-left border-right btn-blue-grey">Coupons</button>
+        <button onclick="toggleview(); showTab(2)" class="btn btn-sm badge btn-blue-grey">Sales</button>
+    </span>
+</span>
+
+
+<!-- TAB INVOICES -->
+<div id="invoices" class="tab row mt-5 ">
+    {% for invoice in invoices %}
+    <div id="invoice-list" class=" card col-md-5 m-2 col-lg-3 mt-2 mb-1">
+        <ul id="details"> 
+            <li class="detail d-flex">
+                <span class="id">#{{ invoice.number }} </span> 
+                <span class="status badge red white-text"> {{invoice.status}} </span>
+            </li>
+            <li class="detail d-flex">
+                <span class="id">{{ invoice.date_created.date }} </span> 
+                <h5 class="status badge blue-grey white-text">{{store.currency.symbol}} {{invoice.amount}} </h5>
+            </li>
+        </ul>
+    </div>
+
+    {% endfor %}
+</div>
+<!-- END TAB INVOICES-->
+
+
+<!-- TAB COUPONS-->
+<div id="coupons" class="tab d-none row mt-5 ">
+    {% for coupon in coupons %}
+        <div id="coupon" class="coupon card col-md-5 mt-2 mb-2 card">
+            <ul id="details"> 
+                <li class="detail d-flex">
+                    <span class="id">#{{ forloop.counter }} </span> 
+                    <span class="status badge red white-text"> {{coupon.code}} </span>
+                </li>
+                <li class="detail d-flex">
+                    <span class="id"> 
+                        {% if coupon.validity %}
+                        {{ coupon.validity }}
+                        {% else %}
+                        No expiration
+                        {% endif %}                            
+                    </span> 
+                    <h5 class="status badge blue-grey white-text">{{store.currency.symbol}} {{coupon.worth}} </h5>
+                </li>
+            </ul>
+        </div>
+    {% endfor %}
+</div>
+<!-- END TAB COUPONS -->
+
+
+<!-- TAB SALES -->
+<div id="sales" class="tab d-none row mt-5">
+
+    <!-- DAILY SALES REPORT -->
+
+        <canvas class="col-lg-6 col-md-12 col-sm-12 text-center chart my-4" width="750em" height="500em" id="dailyChart"></canvas>
+    
+    <!-- / DAILY SALES REPORT -->
+
+    <!-- WEEKLY SALES REPORT -->
+    
+    <!-- /WEEKLY SALES REPORT -->
+
+    <!-- MONTHLY SALES REPORT-->
+    
+    <!-- /MONTHLY SALES REPORT-->
+
+    <!-- YEARY SALES REPORT -->
+
+    <!-- /YEARY SALES REPORT -->
+
+</div>
+<!-- END TAB SALES -->
+
+
+{% endblock content %}
+
+
+{% block active %}
+<script src="{% static 'js/admin/store/Chart.min.js' %}"> </script>
+<script>
+document.getElementById('reports-link').style.backgroundColor = 'black';
+document.getElementById('page-main').classList.add('container');
+
+const tabs = document.querySelectorAll('.tab')
+const btns = document.getElementById('tab-btns').children
+
+function toggleview(){
+    for(var i=0; i < tabs.length; i++){
+        if(tabs[i].classList.contains('d-none')){
+            // pass
+        } else{
+            tabs[i].classList.add('d-none')
+        }
+    }
+}
+
+function showTab(idx){
+    tabs[idx].classList.remove('d-none')
+    for (var i=0; i < btns.length; i++){
+        if (btns[i] === event.target){
+        } else {
+            btns[i].classList.remove('btn-dark')
+        }
+    }
+    event.target.classList.add('btn-dark')
+}
+
+/* 
+    Chart Data Logic  : Django variables + Chartjs
+*/
+(function chart1(){
+  'use strict'
+
+  // Graphs
+  var ctx = document.getElementById('dailyChart')
+  // eslint-disable-next-line no-unused-vars
+  var myChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: [
+        'Sunday',
+        'Monday',
+        'Tuesday',
+        'Wednesday',
+        'Thursday',
+        'Friday',
+        'Saturday'
+      ],
+      colors:[
+        'red',
+      ],
+      title: 'Title',
+      datasets: [{
+        data: [
+          115,
+          25,
+          83,
+          40,
+          49,
+          20,
+          34
+        ],
+        backgroundColor: '#2bbbad',
+        borderWidth: 0,
+      }]
+    },
+    options: {
+      scales: {
+        yAxes: [{
+          ticks: {
+            beginAtZero: false
+          }
+        }]
+      },
+      legend: {
+        display: true,
+        title: 'Sales'
+      }
+    }
+  })
+}())
+
+
+</script>
+
+{% endblock active %}

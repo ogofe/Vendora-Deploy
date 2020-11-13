@@ -1,0 +1,52 @@
+{% load static %}
+{% load tz %}
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="Vendora LLC">
+    <title>Vendora | Signin</title>
+
+    <meta name="theme-color" content="#563d7c">
+    <link rel="Stylesheet" href="{% static 'css/global/bootstrap.min.css' %}">
+    <link rel="Stylesheet" href="{% static 'css/admin/auth/signin.css' %}">
+
+    <style>
+      .bd-placeholder-img {
+        font-size: 1.125rem;
+        text-anchor: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
+
+      @media (min-width: 768px) {
+        .bd-placeholder-img-lg {
+          font-size: 3.5rem;
+        }
+      }
+    </style>
+    <!-- Custom styles for this template -->
+    <link href="signin.css" rel="stylesheet">
+  </head>
+  <body class="text-center">
+    <form class="form-signin" method="POST">
+    {% csrf_token %}
+      {% comment %} <img class="mb-4" src="{% static 'icons/svg/bootstrap/bootstrap.svg' %}" alt="" width="72" height="72"> {% endcomment %}
+      <h1 class="h3 mb-3 font-weight-normal text-white">Sign into your store</h1>
+      <input type="text" placeholder="Store Name" name="username" id="username" class="form-control-plaintext">
+      <input type="password" placeholder="Password" name="password" id="password" class="form-control-plaintext">
+      <div class="checkbox mb-3 text-white">
+        <label>
+          <input type="checkbox" value="remember-me"> Remember me
+        </label>
+      </div>
+      <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+      <p class="mt-2 mb-3 text-white-50">&copy; 2020 Vendora&trade;</p>
+  </form>
+</body>
+</html>

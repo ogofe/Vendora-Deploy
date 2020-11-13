@@ -1,0 +1,120 @@
+{% load static %}
+{% load tz %}
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="Vendora LLC">
+    <title>{{store.name}} | Admin Dashboard </title>
+
+    <meta name="theme-color" content="#563d7c">
+    <link rel="Stylesheet" href="{% static 'css/global/bootstrap.min.css' %}">
+    <link rel="Stylesheet" href="{% static 'css/store/default/mdb/mdb.min.css' %}">
+    <link rel="Stylesheet" href="{% static 'css/store/default/mdb/mdb.lite.css' %}">
+    <link rel="Stylesheet" href="{% static 'css/store/default/mdb/datatables.min.css' %}">
+    <link rel="Stylesheet" href="{% static 'css/store/default/mdb/animations-extended.min.css' %}">
+    <link rel="Stylesheet" href="{% static 'css/admin/store/dashboard.css' %}">
+    <link rel="Stylesheet" href="{% static 'css/admin/store/admin.css' %}">
+
+    <style>
+      .bd-placeholder-img {
+        font-size: 1.125rem;
+        text-anchor: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
+
+      @media (min-width: 768px) {
+        .bd-placeholder-img-lg {
+          font-size: 3.5rem;
+        }
+      }
+
+      #settings-wrapper{
+        width: 300px;
+        position: fixed;
+        top: 4em;
+        left: 1em;
+        z-index: 5000;
+        background: white;
+        border: 2px solid black;
+      }
+
+      #settings-wrapper iframe{
+        border: 0;
+        width: 296px;
+        height: 450px;
+      }
+
+      @media(min-width:500px){
+        #settings-wrapper{
+          left: 10%
+        }
+      }
+
+    </style>
+    <!-- Custom styles for this template -->
+    <link href="signin.css" rel="stylesheet">
+  </head>
+<body class="text-center">
+<nav class="navbar sticky-top bg-dark text-white container mt-4">
+    <div class="btn-group">
+        <button onclick="toggleNav()" id="nav-toggle" class="navbar-toggler navbar-dark waves-effect waves">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <a href="{% url 'store:store-view' store.name %}" class="white-text  navbar-brand" id="store-name"> {{ store.name }} </a>
+    </div>
+    <div>
+      <button onclick="toggleOptions()" class="chip p-2 text-white">
+          {{ store.owner.name }}
+      </button>
+      <div id="controls">
+        <a href="{% url 'vendor:logout' store.name %}" class="d-block control"> Sign Out </a>
+        <a onclick="showSettings()" class="d-block control"> Settings </a>
+    </div>
+    </div>
+</nav>
+  <div id="page">
+    <div id="page-nav" class="container sticky-top bg-dark text-white text-center">
+      <ul id="nav" class="p-0 pt-3">
+        <li class="nav-item" id="dashboard-link"> <a class="nav-link" href="{% url 'vendor:dashboard' store.name %}"> Dashboard </a> </li>
+        <li class="nav-item" id="store-link"> <a class="nav-link" href="{% url 'vendor:store' store.name %}"> Store </a> </li>
+        <li class="nav-item" id="customers-link"> <a class="nav-link" href="{% url 'vendor:customers' store.name %}"> Customers </a> </li>
+        <li class="nav-item" id="integrations-link"> <a class="nav-link" href="{% url 'vendor:integrations' store.name %}"> Integrations </a> </li>
+        <li class="nav-item" id="alerts-link"> <a class="nav-link" href="{% url 'vendor:alerts' store.name %}"> Alerts </a> </li>
+        <li class="nav-item" id="reports-link"> <a class="nav-link" href="{% url 'vendor:reports' store.name %}"> Reports </a> </li>
+      </ul>
+    </div>
+
+    <div id="page-main" role="main" class="">
+        <main class="container-fluid">
+          {% block content %}
+
+          {% endblock content %}
+        </main>
+
+        <div id="settings-wrapper" class="settings-wrapper box d-none">
+          <iframe src="{% url 'vendor:settings' store.name %}"></iframe>
+          <button onclick="hideSettings()" class="btn btn-sm badge amber white-text"> close </button>
+        </div>
+    </div>
+
+  </div>
+  <script src="{% static 'js/bootstap/bootstrap.js' %}"></script>
+  <script src="{% static 'js/mdb/datatables.js' %}"></script>
+  <script src="{% static 'js/admin/store/Chart.min.js' %}"></script>
+  <script src="{% static 'js/admin/store/feather.min.js' %}"></script>
+  <script src="{% static 'js/admin/store/admin.js' %}"></script>
+  
+    {% block charts %}
+    {% endblock charts %}
+
+    {% block active %}
+    {% endblock active %}
+</body>
+</html>

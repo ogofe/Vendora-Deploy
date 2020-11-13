@@ -1,0 +1,173 @@
+{% load static %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="Stylesheet" href="{% static 'css/global/bootstrap.min.css' %}">
+    <link rel="Stylesheet" href="{% static 'css/store/default/mdb/mdb.min.css' %}">
+    <title> Vendora | Sign Up </title>
+    <style>
+        #form-wrapper{
+            border-radius: 5px;
+        }
+        .form{
+            margin: auto;
+            margin-top: auto;
+            margin-top: 1.5em;
+            width: 550px;
+            padding: 2em 2em;
+            padding-left: 1em;
+            border-radius: 4px;
+            border: 0;
+        }
+        .current{
+            border: 2px solid peachpuff !important;
+            box-shadow: burlywood 0 0 15px;
+        }
+
+        #lbl{
+            background: white;
+            padding: .09rem 1.4em;
+            color: grey !important;
+            border-radius: 5px;
+            
+        }
+        #countries{
+            padding: .1rem;
+            color: grey !important;
+            border-radius: 5px;
+            
+        }
+        #store_name{
+            width: 97%;
+        }
+        .in{
+            margin: .2rem 0;
+        }
+        #submit{
+            margin-left: 30%;
+        }
+        #steps_list{
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            padding: 0;
+        }
+        .step{
+            border-radius: 5px;
+            border: 0;
+            padding: 2em;
+            transition: 1s;
+        }
+
+        /*@media(min-width: 00px){
+            .form{
+                width: 300px;
+            }
+        } */
+        @media(max-width: 570px){
+            .form{
+                width: 300px;
+            }
+            #store_name{
+                width: inherit;
+            }
+            #submit{
+                margin-left: 10%;
+            }
+        }
+    </style>
+</head>
+<body class="">
+    <div class="container">
+        <h4 class="blue-grey-text text-center mt-4"> Create Your Store In 3 Easy Steps </h4>
+        <div id="steps" class="mt-5">
+            <ul id="steps_list">
+                <li class="blue-grey white-text m-2 step">Create Store</li>
+                <li class="blue-grey white-text m-2 step">Personalize</li>
+                <li class="blue-grey white-text m-2 step">Setup BIlling</li>
+            </ul>
+        </div>
+        <div class="blue-grey" id="form-wrapper">
+        <!-- Sign Up Form -->
+        <div class="wrapper form d-none">
+            <form id="form" method="POST">
+                {% csrf_token %}
+                <input type="text" name="first_name" id="first_name" placeholder="First Name" class=" in">
+                <input type="text" name="last_name" id="last_name" placeholder="Last Name" class=" in">
+                <input type="email" name="email" id="email" placeholder="Email " class=" in">
+                <label id="lbl" for="countries" class="in ml-2 white-text">
+                    Country
+                    <select name="country" id="countries">
+                        <option value="{{country}}" class="option in">Nigeria</option>
+                        {% for country in countries %}
+                            <option value="{{country}}" class="option in">{{country}}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+                
+                <input type="text" name="store_name" id="store_name" placeholder="Store Name" class=" in">
+                <input type="password" name="password1" id="password1" placeholder="Password" class=" in">
+                <input type="password" name="password2" id="password2" placeholder="Comfirm password" class=" in">
+                <button id="submit" type="submit" class="btn green badge d-block"> Create Store </button>
+            </form>
+        </div>
+        <!-- Sign Up Form -->
+        
+        <!-- Personalization Form -->
+        <div class="wrapper form d-none">
+            <form id="form" method="POST">
+                {% csrf_token %}
+                <label id="lbl" for="countries" class="in ml-2 white-text">
+                    Choose a Currency for your store
+                    <select name="currency" id="currencies">
+                        {% for currency in currencies %}
+                            <option value="{{currency}}" class="option in">{{currency}}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+                <button id="submit" type="submit" class="btn green badge d-block"> Save Changes </button>
+            </form>
+        </div>
+        <!-- Personalization Form -->
+
+        <!-- Billing Form -->
+        <div class="wrapper form d-none">
+            <form id="form" method="POST">
+                {% csrf_token %}
+                <input type="text" name="first_name" id="first_name" placeholder="First Name" class=" in">
+                <input type="text" name="last_name" id="last_name" placeholder="Last Name" class=" in">
+                <input type="email" name="email" id="email" placeholder="Email " class=" in">
+                <label id="lbl" for="countries" class="in ml-2 white-text">
+                    Country
+                    <select name="country" id="countries">
+                        <option value="{{country}}" class="option in">Nigeria</option>
+                        {% for country in countries %}
+                            <option value="{{country}}" class="option in">{{country}}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+                
+                <input type="text" name="store_name" id="store_name" placeholder="Store Name" class=" in">
+                <input type="password" name="password1" id="password1" placeholder="Password" class=" in">
+                <input type="password" name="password2" id="password2" placeholder="Comfirm password" class=" in">
+                <button id="submit" type="submit" class="btn green badge d-block"> Start Now </button>
+                {% if store %}
+                <a href="{% url 'vendor:store' store.name %}" class="btn green badge d-block"> Skip (free trial) </a>
+                {% endif %}
+            </form>
+        </div>
+        <!-- Billing Form -->
+
+        </div>
+    </div>
+    <script>
+        let forms = document.querySelectorAll('.form')
+        let steps = Array.from(document.querySelectorAll('.step'))
+        steps[{{idx|escapejs}}].classList.add('current')
+        forms[{{idx|escapejs}}].classList.remove('d-none')
+
+    </script>
+</body>
+</html>

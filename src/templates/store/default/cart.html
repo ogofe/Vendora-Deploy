@@ -1,0 +1,141 @@
+ {% extends './base.html' %}
+ {% load static %} 
+
+{% block content %}
+
+    <style>
+
+        #form1 {
+            display: inline-flex;
+        }
+        .btn-group .btn-blue{
+            margin-right: 0;
+        }
+        #cart-container {
+            margin-top: 7em;
+        }
+        
+        table {
+            margin: 0 10px;
+            margin-top: 7em;
+            border-radius: 5px;
+        }
+
+        #qty input{
+            box-sizing: content-box;
+            height: 1.5em;
+            border-style: groove;
+        }
+        
+        #qty .btn {
+            /* width: fit-content; */
+            padding: .2em .7em;
+        }
+        
+        #qty input {
+            width: 4em;
+        }
+
+        #form-qty {
+            text-align: center;
+        }
+        #control-wrapper .btn {
+            padding: 0;
+            padding: .2em;
+            box-shadow: none;
+            margin-top: 0;
+            height: 2.3em;
+            width: 2em;
+        }
+        #control-wrapper .btn-danger {
+            margin-left: .02rem;
+        }
+
+        @media (max-width: 620px){
+            table{
+                display: block;
+            }
+        }
+
+        @media (max-width: 504px){
+            #cart li:not(:last-child){
+                display: block !important;
+            }
+            #item-wrapper{
+                justify-content: inherit;
+            }
+        }
+    </style>
+
+    <div class="mt-7 container text-center">
+        <div class="text-left">
+            <div id="cart" class=" order-md-2 mb-4">
+                <h4 class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="text-muted">Your cart</span>
+                    <span class="badge badge-secondary badge-pill"> {{ cart.count }} </span>
+                </h4>
+                <ul class="list-group mb-3">
+                    {% for item in items %}
+                    <li id="item" class="list-group-item d-flex justify-content-between item lh-condensed">
+                        <div id="item-wrapper" class="d-flex">
+                            <div>
+                                <h6 class="my-0"> {{ item.item.name }} </h6>
+                                <small class="text-muted">{{ item.item.description }}</small>
+                            </div>
+                            <span class="text-muted pl-1 pr-1">{{ store.currency.symbol }} 
+                            {% if item.item.discount_price %}
+                                {{ item.item.discount_price }}
+                            {% else %}
+                                {{ item.item.price }}
+                            {% endif %}
+                            </span>
+                        </div>
+
+                        <div id="control-wrapper">
+                            <div class="btn-group">
+                                <a class="btn btn-blue " href="{% url 'store:minus' store.name item.id %}"> - </a>
+                                <form method="POST" id="qty" action="{% url 'store:change-cart-quantity' store.name item.id %}">
+                                    {% csrf_token %}
+                                    <input type="number" id="form-qty" name="quantity" value={{item.quantity}} title="
+                                Hit enter when done.
+                                ">
+                                </form>
+                                <a class="btn btn-danger" href="{% url 'store:plus' store.name item.id %}"> + </a>
+                                <a class="btn btn-dark" href="{% url 'store:delete-cart-item' store.name item.id %}"> &times; </a>
+                            </div>
+                        </div>
+                    </li>
+                    {% endfor %}
+
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span>Total ({{ store.currency.code }})</span>
+                        <strong>{{ store.currency.symbol }}{{cart.total}}</strong>
+                    </li>
+                </ul>
+
+            </div>
+        </div>
+
+        <a id="checkout" href="{% url 'store:store-view' store.name %}" class="btn bg-primary text-white">
+            Continue Shopping
+        </a>
+
+        <a id="checkout" 
+        {% if cart.count > 0 %}
+	        href="{% url 'store:checkout-view' store.name %}" 
+	{% endif %}
+        class="btn btn-cyan">
+            Proceed to ckeckout
+        </a>
+    </div>
+
+<script>
+    let footer = document.getElementById('page-footer')
+    if (document.querySelectorAll('.item').length < 4){
+        footer.style.position = 'fixed !important'
+        footer.style.bottom = '0 !important;'
+        footer.style.width = 'inherit'
+        console.log("Footer is", footer)
+    }
+</script>
+{% endblock content %}

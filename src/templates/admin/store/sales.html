@@ -1,0 +1,64 @@
+{% load static %}
+
+<div class="daily">
+    <canvas id="dailyChart"></canvas>
+</div>
+
+<script>
+    (function chart2(){
+  'use strict'
+
+  //feather.replace()
+
+  // Graphs
+  var ctx = document.getElementById('dailyChart')
+  // eslint-disable-next-line no-unused-vars
+  var myChart = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: [
+        'Sunday',
+        'Monday',
+        'Tuesday',
+        'Wednesday',
+        'Thursday',
+        'Friday',
+        'Saturday'
+      ],
+      datasets: [{
+        data: [
+          15,
+          25,
+          83,
+          40,
+          49,
+          2,
+          34
+        ],
+        backgroundColor: '#2bbbad',
+        borderColor: 'red',
+        borderPointCoor: 'red',
+        borderWidth: 0,
+      }]
+    },
+    options: {
+      scales: {
+        yAxes: [{
+          ticks: {
+            beginAtZero: true,
+          },
+          minor: 0,
+          major: 100,
+        }]
+      },
+      legend: {
+        display: true
+      }
+    }
+  })
+}())
+
+document.addEventListener("click", ()=>{
+  return
+}, )
+</script>

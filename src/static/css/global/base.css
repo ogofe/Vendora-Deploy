@@ -1,0 +1,66 @@
+#intro{
+    padding: 5em 1.5em;
+}
+
+#intro-content{
+    max-width: 500px;
+}
+
+#nav{
+    box-shadow: #343a40 1px 1px 5px;
+}
+
+.btn-group{
+    width: fit-content;
+    border: white solid 2px;
+}
+
+.btn{
+    font-style: normal;
+    padding: .5em 1em;
+    margin: 0;
+    box-shadow: none;
+    border-radius: 0;
+    font-size: .8rem;
+    color: azure;
+}
+
+#about{
+    margin-top: 4em;
+}
+
+
+@media(min-width: 780px){
+    #analysis{
+        display: grid;
+        margin-top: 3em;
+        grid-template-columns: 60% 40%;
+        grid-template-areas: "content image";
+    }
+    #customize{
+        margin-top: 3em;
+        display: grid;
+        grid-template-columns: 60% 40%;
+        grid-template-areas: "content image";
+    }
+
+    #analysis-content{
+        grid-area: content;
+        display: grid;
+    }
+
+    #analysis-image{
+        display: grid;
+        grid-area: image;
+    }
+
+    #customize-content{
+        grid-area: content;
+        display: grid;
+    }
+
+    #customize-image{
+        display: grid;
+        grid-area: image;
+    }
+}

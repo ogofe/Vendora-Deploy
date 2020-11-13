@@ -1,0 +1,71 @@
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/store/default/mdb/mdb.min.css'%}">
+    <link rel="stylesheet" href="{% static 'css/global/bootstrap.min.css'%}">
+    <link rel="stylesheet" href="{% static 'css/global/base.css'%}">
+    <link rel="stylesheet" href="{% static 'css/global/scrollbar.css'%}">
+    <title>Vendora</title>
+</head>
+<body>
+    <nav class="navbar sticky-top bg-dark text-white" id="nav">
+        <div class="container">
+            <h1 class="navbar-brand"> Vendora! </h1>
+            <div class="btn-group">
+            {% if not request.user.is_authenticated %}
+            <a class="btn bg-primary" href="{% url 'accounts:signup' %}">
+                Sign Up
+            </a>
+            <a class="btn bg-secondary" href="{% url 'accounts:login' %}">
+                Login
+            </a>
+            {% else %}
+                {% if store %}
+                <a class="btn bg-primary white-text" href="{% url 'vendor:dashboard' store.name %}">
+                    {{store.name}} Admin
+                </a>
+                {% endif %}
+            
+            {% endif %}
+                
+            </div>
+        </div>
+    </nav>
+
+    <section class=" bg-dark text-white" id="intro">
+        <div id="intro-content">
+            <h4> Welcome To Your New Online Store! </h4>
+            <p> {% lorem 1 b  %} </p>
+        </div>
+    </section>
+
+    <main role="main" class="p-5">
+        <section id="we" class="mt-5 mb-5">
+            <h3> What We Offer </h3>
+            <article>{% lorem 2 b %} </article>
+        </section>
+
+        <section id="about" class="madagascar">
+            <div id="customize">
+                <img src="{% static 'img/svg/base/customize.svg' %}" id="customize-image">
+                <div id="customize-content">
+                    <h3> A Responsive And Customizable Site </h3>
+                    <p> {% lorem 1 b %} </p>
+                </div>
+            </div>
+
+            <div id="analysis">
+                <img src="{% static 'img/svg/base/analysis.svg' %}" id="analysis-image">
+                <div id="analysis-content" class="mt-5">
+                    <h3> Fully Packed, Functional Backend </h3>
+                    <p> {% lorem 1 b %} </p>
+                </div>
+            </div>
+        </section>
+    </main>
+   
+    
+</body>
+</html>

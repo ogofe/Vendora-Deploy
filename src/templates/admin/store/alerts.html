@@ -1,0 +1,39 @@
+{% extends './base.html' %}
+
+{% block content %}
+<style>
+    .close{
+        position: absolute;
+        top: 0;
+        right: 0;
+        border: burlywood 1px solid;
+        border-radius: 5px;
+        padding: .2em .3em;
+    }
+    .badge{
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+</style>
+
+<div class="mt-5 row">
+{% for alert in alerts %}
+    <div class="alert card col-md-5 pb-3">
+        <a href="{% url 'vendor:close-alert' store.name alert.id %}" class="close"> &times; </a>
+        <span class="badge red"> {{alert.get_priority_display}} Priority</span>
+        <h5 class="alert-title mb-3 mt-3 blue-grey-text"> {{ alert.title }} </h5>
+        <p class="h6 text-left"> {{alert.message|safe}} </p>
+    </div>
+{% endfor %}
+</div>
+
+{% endblock content %}
+
+{% block active %}
+<script>
+  document.getElementById('alerts-link').style.backgroundColor = 'black';
+  document.getElementById('page-main').classList.add('container');
+</script>
+
+{% endblock active %}
