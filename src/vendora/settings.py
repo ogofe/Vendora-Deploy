@@ -15,8 +15,6 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-AUTH_USER_MODEL = 'accounts.User'
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
@@ -33,26 +31,37 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    # vendora
     'accounts',
-    'vendor',
+    'api',
     'intro',
+    'plugins',
     'store',
+    'vendor',
+    # django defaults
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # third parties
+    'rest_framework',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    # 'store.middleware.CartFetchMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # vendora middleware
+    # 'store.middleware.StoreTemplateMiddleware',
 ]
 
 ROOT_URLCONF = 'vendora.urls'
@@ -61,6 +70,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
+            os.path.join(BASE_DIR, r'^templates/store/\*[A-Za-z0-9_]\*'),
             os.path.join(BASE_DIR, 'templates/store'),
             os.path.join(BASE_DIR, 'templates')
         ],
@@ -143,3 +153,12 @@ PASSWORD_RESET_TIMEOUT_DAYS = 3
 
 # SESSION AND COOKIES
 SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
+
+
+CORS_ORIGIN_WHITELIST = [
+    'http://127.0.0.1:8100',
+    'http://127.0.0.1:3000',
+    'http://localhost:3000',
+]
+
+#CORS_ORIGIN_ALLOW_ALL = True

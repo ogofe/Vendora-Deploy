@@ -10,6 +10,9 @@
     <style>
         #form-wrapper{
             border-radius: 5px;
+            width: max-content;
+            margin: auto;
+            padding: .7em .4em;
         }
         .form{
             margin: auto;
@@ -57,7 +60,7 @@
         .step{
             border-radius: 5px;
             border: 0;
-            padding: 2em;
+            padding: 1em;
             transition: 1s;
         }
 
@@ -92,7 +95,7 @@
         <div class="blue-grey" id="form-wrapper">
         <!-- Sign Up Form -->
         <div class="wrapper form d-none">
-            <form id="form" method="POST">
+            <form id="form1" method="POST">
                 {% csrf_token %}
                 <input type="text" name="first_name" id="first_name" placeholder="First Name" class=" in">
                 <input type="text" name="last_name" id="last_name" placeholder="Last Name" class=" in">
@@ -100,7 +103,7 @@
                 <label id="lbl" for="countries" class="in ml-2 white-text">
                     Country
                     <select name="country" id="countries">
-                        <option value="{{country}}" class="option in">Nigeria</option>
+                        <option value="Nigeria" class="option in">Nigeria</option>
                         {% for country in countries %}
                             <option value="{{country}}" class="option in">{{country}}</option>
                         {% endfor %}
@@ -110,15 +113,6 @@
                 <input type="text" name="store_name" id="store_name" placeholder="Store Name" class=" in">
                 <input type="password" name="password1" id="password1" placeholder="Password" class=" in">
                 <input type="password" name="password2" id="password2" placeholder="Comfirm password" class=" in">
-                <button id="submit" type="submit" class="btn green badge d-block"> Create Store </button>
-            </form>
-        </div>
-        <!-- Sign Up Form -->
-        
-        <!-- Personalization Form -->
-        <div class="wrapper form d-none">
-            <form id="form" method="POST">
-                {% csrf_token %}
                 <label id="lbl" for="countries" class="in ml-2 white-text">
                     Choose a Currency for your store
                     <select name="currency" id="currencies">
@@ -127,7 +121,8 @@
                         {% endfor %}
                     </select>
                 </label>
-                <button id="submit" type="submit" class="btn green badge d-block"> Save Changes </button>
+                <button id="submit" form="form1" type="submit" class="btn green badge d-block"
+                        formaction="{% url 'accounts:create-user' %}"> Create Store </button>
             </form>
         </div>
         <!-- Personalization Form -->

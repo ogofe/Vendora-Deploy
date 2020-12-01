@@ -1,65 +1,36 @@
 from django.db import models
-from django.db import models
-from django.contrib.auth.models import (
-    BaseUserManager,
-    AbstractBaseUser,
-    PermissionsMixin
-)
+from django.contrib.auth.models import User
 
 
-GENDER = (('M', 'Male'), ('F', 'Female'), ('O', 'Other'))
 
-class Manager(BaseUserManager):
-    def create_user(self, email, password=None):
-        """
-        Creates and saves a User with the given email, date of
-        birth and password.
-        """
-        if not email:
-            raise ValueError('An email address is required')
-        user = self.model(
-            email=self.normalize_email(email),
-        )
-        user.set_password(password)
-        user.save(using=self._db)
-        return user
-    def create_superuser(self, email, password):
-        """
-        Creates and saves a superuser with the given email and password.
-        """
-        user = self.create_user(
-            email,
-            password=password,
-        )
-        user.is_admin = True
-        user.is_superuser = True
-        user.is_staff = True
-        user.save(using=self._db)
-        return user
-
-class User(AbstractBaseUser, PermissionsMixin):
-    first_name = models.CharField(max_length=50, blank=True)
-    last_name = models.CharField(max_length=50, blank=True)
-    email = models.EmailField(unique=True, max_length=200, verbose_name='Email Address')
-    gender = models.CharField(max_length=1, choices=GENDER)
-    is_active = models.BooleanField(default=True)
-    is_staff = models.BooleanField(default=False)
-    is_admin = models.BooleanField(default=False)
-    is_superuser = models.BooleanField(default=False)
-
-    objects = Manager()
+Model = models.Model
+class Merchant(Model):
+    profile = models.OneToOneField(User, on_delete=models.CASCADE)
+    merchant_id = models.CharField(max_length=50, blank=True)
+    avatar = models.FileField(upload_to='profile/', blank=True, null=True)
+    stores = models.ManyToManyField('store.Store', blank=True)
+    phone = models.CharField(max_length=20)
+    country = models.CharField(max_length=50)
+    tokens = models.ManyToManyField('Token', blank=True, related_name='tokens')
+    bank_name = models.CharField(max_length=150)
+    bank_acct_name = models.CharField(max_length=150)
+    bank_acct_num = models.CharField(max_length=30)
     
-    REQUIRED_FIELDS = []
-    USERNAME_FIELD = 'email'
+    def __str__(self):
+        return self.name()
 
-    class Attrs:
-        has_store = False
-        
     def name(self):
-        return f'{self.first_name} {self.last_name}'
+        return f'{self.profile.first_name} {self.profile.last_name}'
+
+
+class Token(Model):
+    merchant = models.ForeignKey(Merchant, on_delete=models.CASCADE)
+    api = models.URLField()
+    name = models.CharField(max_length=50)
+    token = models.CharField(max_length=200)
 
 class BillingAddress(models.Model):
-    user = models.ForeignKey('User', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     country = models.CharField(max_length=30)
     state = models.CharField(max_length=35)
     city = models.CharField(max_length=30)
@@ -77,7 +48,7 @@ class BillingAddress(models.Model):
         verbose_name_plural = 'Billing Addresses'
 
 class ShippingAddress(models.Model):
-    user = models.ForeignKey('User', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     country = models.CharField(max_length=30)
     state = models.CharField(max_length=35)
     city = models.CharField(max_length=30)

@@ -1,119 +1,128 @@
 {% extends './base.html' %}
 
 {% block content %}
-<style>
-.name{
-    font-size: initial;
-}
+    <style>
 
-.card:hover{
-    box-shadow: 0 2px 15px 0 rgba(0, 0, 0, 0.16), 0 2px 25px 0 rgba(0, 0, 0, 0.12);
-    transition: .5s;
-    cursor: pointer;
-}
+    #page-main{
+        padding-rigth: 0;
+    }
 
-.select{
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: max-content;
-}
-.select .check{
-    vertical-align: bottom;
-}
+    .card{
+        max-width: 250px;
+    }
 
-.cta{
-    text-transform: none;
-    position: absolute;
-}
+    .name{
+        font-size: initial;
+    }
 
-#cta{
-    bottom: 2em;
-    right: 3em;
-}
+    .card:hover{
+        box-shadow: 0 2px 15px 0 rgba(0, 0, 0, 0.16), 0 2px 25px 0 rgba(0, 0, 0, 0.12);
+        transition: .5s;
+        cursor: pointer;
+    }
 
-#all{
-    position: absolute !important;
-    top: 6em;
-    right: 3em;
-}
-</style>
+    .select{
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: max-content;
+    }
+    .select .check{
+        vertical-align: bottom;
+    }
 
-<button id="all" type="button" onclick="selectAll()" class=" cta btn badge blue">Select All</button>
+    .row{
+        justify-content: center;
+    }
+    </style>
 
-<div class="row mt-5 mb-5">
-    
-    <span  class="mb-4"></span>
+    <div class=" d-flex justify-content-center">
+        <button id="all" type="button" onclick="selectAll()" class=" cta btn badge blue">Select All</button>
+        <button id="cta" type="submit" formtarget="window" formaction="{% url 'vendor:export-contacts' store.name %}" 
+            form="contact-form" class=" cta btn badge amber">  Export 
+            <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-file-earmark-spreadsheet" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" d="M5 10H3V9h10v1h-3v2h3v1h-3v2H9v-2H6v2H5v-2H3v-1h2v-2zm1 0v2h3v-2H6z"/>
+                <path d="M4 0h5.5v1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h1V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z"/>
+                <path d="M9.5 3V0L14 4.5h-3A1.5 1.5 0 0 1 9.5 3z"/>
+            </svg>
+        </button>
 
-<form id="contact-form" name="contacts" method="POST">
-    {% csrf_token %}
-<select hidden multiple name="email" aria-multiline="true" aria-multiselectable="true">
-    {% for person in customers %}
-    <option class="option" value="{{person}}" >
-        <div id="card{{forloop.counter}}" onclick="toggleSelect({{ forloop.counter }})" class="col-md-4 mt-2 col-sm-6 card mr-1 ml-1 col-lg-3 pt-3 pb-3">
-            <span class="badge select p-0"> 
-                <input type="checkbox" id="check{{forloop.counter}}" checked="false" 
-                onclick="perform({{forloop.counter}})" class="check"> 
-            </span>
-            <h4 class="name badge blue-grey p-2 mt-2 font-20" > {{ person.name }} </h4>
-            <h6 class=""> {{ person }} </h6>
-        </div>
-    </option>
-    {% endfor %}
-</select>
+    </div>
 
-</form>
-</div>
+    <div class="row mt-5 mb-5">
+        <span  class="mb-4"></span>
 
-<button id="cta" type="submit" formtarget="window" formaction="{% url 'vendor:export-contacts' store.name %}" 
-   form="contact-form" class=" cta btn badge amber">Export &curvearrowright;</button>
+        <!-- The complete list of contacts in a store -->
+        <form id="contact-form" name="contacts" method="POST" class="row w-100" novalidate="">
+        {% csrf_token %}
+            {% for person in customers %}
+                <div id="card{{forloop.counter}}" onclick="toggleSelect({{ forloop.counter }})" 
+                    class="col-md-4 mt-2 col-sm-6 card mr-1 ml-1 col-lg-3 pt-3 pb-3">
+                    <span class="badge select p-0"> 
+                        <input type="checkbox" name="email" id="check{{forloop.counter}}" aria-checked="false"
+                        
+                        onclick="perform({{forloop.counter}})" value={{person.email}} class="check"> 
+                    </span>
+                    <h4 class="name badge blue-grey p-2 mt-2 font-20" > {{ person.name }} </h4>
+                    <h6 class=""> {{ person }} </h6>
+                </div>
+            {% endfor %}
+        </form>
+    </div>
+
 
 {% endblock content %}
 
 {% block active %}
-<script>
-  document.getElementById('customers-link').style.backgroundColor = 'black';
-  document.getElementById('page-main').classList.add('container');
+    <script>
+        document.getElementById('customers-link').style.backgroundColor = 'black';
+        document.getElementById('page-main').classList.add('container');
+        let cards = document.querySelectorAll('.card')
+        let accounts = Array.from(document.querySelectorAll('.check'))
 
-  function toggleSelect(num){
-    let check = document.getElementById(`check${num}`).click()
-  }
-
-  function perform(id){
-    let card = document.getElementById(`card${id}`)
-    let stat = event.target.getAttribute('checked')
-
-    console.log("Status", stat)
-    if (stat === 'false'){
-        stat = true
-        card.classList.add('grey')
-        card.classList.add('white-text')
-        event.target.setAttribute('checked', `${stat}`)
-    }else if (stat === 'true'){
-        stat = false
-        card.classList.remove('grey')
-        card.classList.remove('white-text')
-        event.target.setAttribute('checked', `${stat}`)
-    }
-  }
-
-  options = Array.from(document.querySelectorAll('.option'))
-
-  function selectAll(){
-    accounts = document.querySelectorAll('.check')
-
-    for(var i=0; i < options.length; i++ ){
-        options[i].selected = true
-    }
-
-    for (var i=0; i < accounts.length; i++){
-        if(accounts[i].getAttribute('checked') === 'true'){
-
-        } else{
-            accounts[i].setAttribute('checked', 'true')
+        function toggleSelect(num){
+            let check = document.getElementById(`check${num}`).click()
         }
-        console.log('USER', accounts[i].attributes)
-    }
-  }
-</script>
+
+        function perform(id){
+            let card = document.getElementById(`card${id}`)
+            let stat = event.target.getAttribute('aria-checked')
+
+            console.log("Status", stat)
+            if (stat === 'false'){
+                stat = true
+                card.classList.add('grey')
+                card.classList.add('white-text')
+                event.target.setAttribute('aria-checked', `${stat}`)
+            }else if (stat === 'true'){
+                stat = false
+                card.classList.remove('grey')
+                card.classList.remove('white-text')
+                event.target.setAttribute('aria-checked', `${stat}`)
+            }
+        }
+
+        function selectAll(){            
+
+            for (var i=0; i < accounts.length; i++){
+                if(accounts[i].checked === true){
+                    if (cards[i].classList.contains('grey')){
+
+                    } else {
+                        cards[i].classList.add('grey')
+                        cards[i].classList.add('white-text')
+                    }
+                } else {
+                    accounts[i].click()
+                    if (cards[i].classList.contains('grey')){
+
+                    } else {
+                        cards[i].classList.add('grey')
+                        cards[i].classList.add('white-text')
+                    }
+                }
+                console.log('USER', accounts[i].getAttribute('aria-checked'))
+            }
+        }
+    </script>
 {% endblock active %}

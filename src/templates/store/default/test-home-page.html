@@ -181,7 +181,7 @@
           </ul>
           <!-- Links -->
 
-          <form class="form-inline">
+          <form class="form-inline mb-0">
             <div class="md-form my-0">
               <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
             </div>
@@ -219,18 +219,18 @@
               <div class="card-body text-center">
                 <!--Category & Title-->
                 <a href="" class="grey-text">
-                  <h5>Shirt</h5>
+                  <h5>Sample Shirt</h5>
                 </a>
                 <h5>
                   <strong>
-                    <a href="" class="dark-grey-text">Denim shirt
+                    <a href="" class="dark-grey-text">Sample Denim shirt
                       <span class="badge badge-pill danger-color">NEW</span>
                     </a>
                   </strong>
                 </h5>
 
                 <h4 class="font-weight-bold blue-text">
-                  <strong>120$</strong>
+                  <strong>{{ store.currency.symbol }}200 (Sample Price)</strong>
                 </h4>
 
               </div>
@@ -249,39 +249,6 @@
         <!--Grid row-->
       </section>
       <!--Section: Products v.3-->
-
-      <!--Pagination-->
-      {% comment %} <nav class="d-flex justify-content-center wow fadeIn">
-        <ul class="pagination pg-blue">
-
-          {% if items.has_previous %}
-            <!--Arrow left-->
-            <li class="page-item">
-              <a class="page-link" href="?page={{items.previous_page_number}}" aria-label="Previous">
-                <span aria-hidden="true">&laquo;</span>
-                <span class="sr-only">Previous</span>
-              </a>
-            </li>
-          {% endif %} 
-    
-          <li class="page-item active">
-            <a class="page-link" href="#">{{ items.number }}
-              <span class="sr-only">(current)</span>
-            </a>
-          </li>
-          
-          {% if items.has_next %}
-            <li class="page-item">
-              <a class="page-link" href="?page={{items.next_page_number}}" aria-label="Next">
-                <span aria-hidden="true">&raquo;</span>
-                <span class="sr-only">Next</span>
-              </a>
-            </li>
-          {% endif %}
-          
-        </ul>
-      </nav> {% endcomment %}
-      <!--Pagination-->
 
     </div>
   </main>

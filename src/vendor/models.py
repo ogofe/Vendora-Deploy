@@ -50,18 +50,20 @@ class Alert(models.Model):
     store = models.ForeignKey('store.Store', on_delete=models.CASCADE)
     maker = models.CharField(max_length=150, default='Vendor Bot')
     date = models.DateTimeField(auto_now=True)
+    cta = models.CharField(max_length=30, blank=True)
+    cta_link = models.URLField(max_length=30, blank=True)
 
     def __str__(self):
         return self.title
 
 
-class Integration(models.Model):
-    type = models.CharField(max_length=20, choices=INTEGRATIONS)
-    social_link = models.ForeignObject('store.Social', blank=True, null=True, on_delete=models.CASCADE,
-    to_fields=['link'], from_fields=['social_link'] )
-    payment_link = models.ForeignObject('store.PaymentMethod', blank=True, null=True, on_delete=models.CASCADE,
-    to_fields=['gateway_link'], from_fields=['payment_link'] )
-    bots = models.ManyToManyField('Bot', blank=True)
+# class Integration(models.Model):
+#     type = models.CharField(max_length=20, choices=INTEGRATIONS)
+#     social_link = models.ForeignObject('store.Social', blank=True, null=True, on_delete=models.CASCADE,
+#     to_fields=['link'], from_fields=['social_link'] )
+#     payment_link = models.ForeignObject('store.PaymentMethod', blank=True, null=True, on_delete=models.CASCADE,
+#     to_fields=['gateway_link'], from_fields=['payment_link'] )
+#     bots = models.ManyToManyField('Bot', blank=True)
 
 class Bot(models.Model):
     name = models.CharField(max_length=100)

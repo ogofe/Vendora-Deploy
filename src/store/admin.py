@@ -2,11 +2,11 @@ from django.contrib import admin
 from store.models import (
     Store, Product,
     Category, Tag,
-    Carousel, CarouselItem,
+    CarouselItem,
     Campaign, CampaignItem,
     Cart, CartItem,
     ColorVariant, SizeVariant,
-    PaymentMethod,
+    PaymentMethod, Order,
     Coupon, Social,
     WishList, WishItem,
     Invoice, Currency, 
@@ -21,6 +21,12 @@ class AdminStore(admin.ModelAdmin):
         'currency',
         'worth',
     ]
+
+    def setup(self, request, queryset):
+        for store in queryset:
+            store.setup()
+
+    actions = ['setup',]
 
 class AdminProduct(admin.ModelAdmin):
     model = Product
@@ -54,7 +60,9 @@ admin.site.register(Cart)
 admin.site.register(CartItem)
 admin.site.register(SizeVariant)
 admin.site.register(ColorVariant)
+admin.site.register(PaymentMethod)
 admin.site.register(Coupon)
+admin.site.register(WishItem)
+admin.site.register(WishList)
 admin.site.register(Invoice, AdminInvoice)
-# admin.site.register(I)
-# admin.site.register(Store)
+admin.site.register(Order)

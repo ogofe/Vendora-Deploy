@@ -5,12 +5,13 @@ from django.contrib.auth.hashers import make_password, PBKDF2PasswordHasher, pbk
 from datetime import datetime
 from django.conf import settings
 from django.views.generic import ListView, DetailView
+from gateways.payment import vougePay
 from store.models import (
     Store, Product,
     Cart, CartItem,
     Invoice, PaymentMethod,
     Coupon, WishList,
-    WishItem,
+    WishItem, 
 )
 from django.contrib import messages
 from random import randint
@@ -21,12 +22,14 @@ BASE_DIR = settings.BASE_DIR
 # User = settings.AUTH_USER_MODEL
 
 
+#::::::::::::::::::::: Globals :::::::::::::::::::::::::::::::::::
 
+# retieves user's cart
 def  getCart(request, store_name):
     store = Store.objects.get(name=store_name)
     if not request.user.is_authenticated:
         sessionid = request.session._get_session_key()
-        user = User(email=sessionid)
+        user = User(username=sessionid)
         user.set_unusable_password()
         user.save()
         login(request, user)
@@ -38,11 +41,15 @@ def  getCart(request, store_name):
         cart.save()
         return cart
 
+
+
+
+# retrieves user's wishlist
 def getWish(request, store_name):
     store = Store.objects.get(name=store_name)
     if not request.user.is_authenticated:
         sessionid = request.session._get_session_key()
-        user = User(email=sessionid)
+        user = User(username=sessionid)
         user.set_unusable_password()
         user.save()
         login(request, user)
@@ -55,9 +62,14 @@ def getWish(request, store_name):
         return wish
 
 
+# Generates an Invoice when the chekout view loads
 def makeInvoice(request, cart:Cart, store:Store):
     done = True
     num = ''
+    # expired = Invoice.objects.filter(issuer=Store.id).filter(status='pending')
+    # print("OLD INVOICES : ", expired)
+    # for i in expired.all():
+    #     i.delete()
     invoice = Invoice(amount=cart.total(), issuer=store, cart=cart, payer=request.user)
     while done:
         for i in range(0, 11):
@@ -77,33 +89,31 @@ def makeInvoice(request, cart:Cart, store:Store):
 
 
 #++++++++++++++++++++++ Auth Views ++++++++++++++++++++++++++++++++
-def register(request, store_name):
-    data = request.POST
-    store = Store.objects.get(name=store_name)
-    password1 = data['password1']; password2 = data['password2']
-    if password1 and password2 and password2 == password1:
-        password = pbkdf2(password1.encode(), 'Kw112jkjs7873bk', 150000, 6)
-    user = User(
-        first_name = data['first_name'],
-        last_name = data['last_name'],
-        email = data['email'],
-        password = password,
-    )
-    store.customers.add(user)
-    return redirect('store:store-view', store_name)
 
+# Closed View [redirect to this view only when store's closed]
+
+def closed_view(request, store_name):
+    store = Store.objects.get(name=store_name)
+    if not store.is_open:   # show this page else go to store
+        template = '%s/closed.html' % store.template_dir
+        context = {
+            'store': store,
+        }
+        return render(request, template, context)
+        
+    return redirect('store:store-view', store_name)
 
 #+++++++++++++++++++++++ Store Views ++++++++++++++++++++++++++++++
 
-
+# Store View
 def store_view(request, store_name):
     store = Store.objects.get(name=store_name)
+    if not store.is_open:
+        return redirect('store:closed', store_name)
     cart = getCart(request, store_name)
+    wish = getWish(request, store_name)
     products = store.products.all().order_by('-id')
-    if products.count() > 0:
-        template = '%s/home-page.html' % store.Attrs.template
-    else:
-        template = '%s/test-home-page.html' % store.Attrs.template
+    template = '%s/home-page.html' % store.template_dir
     pages = Paginator(products, 100, 0)
     page = request.GET.get('page')
     items = pages.get_page(page)
@@ -122,32 +132,43 @@ def store_view(request, store_name):
         'template': template,
         'test': test,
         'cart': cart,
+        'wish': wish,
         'has_account': has_account,
     }
     return render(request, template, context)
 
+
+# Cart View
 def cart_view(request, store_name, *args, **kwargs):
     user = request.user
     store = Store.objects.get(name=store_name)
+    if not store.is_open:
+        return redirect('store:closed', store_name)
     cart = getCart(request, store_name)
+    wish = getWish(request, store_name)
     items = cart.items.all().order_by('-id')
-    template = '%s/cart.html' % store.Attrs.template
+    template = '%s/cart.html' % store.template_dir
     context = {
         'title': 'Cart',
         'items': items,
         'store': store,
         'cart': cart,
+        'wish': wish,
         'template': template,
     }
     return render(request, template, context)
 
+
+# WishList View
 def wish_view(request, store_name, *args, **kwargs):
     user = request.user
     store = Store.objects.get(name=store_name)
-    wish = getCart(request, store_name)
+    if not store.is_open:
+        return redirect('store:closed', store_name)
+    wish = getWish(request, store_name)
     cart = getCart(request, store_name)
     items = wish.items.all()
-    template = '%s/cart.html' % store.Attrs.template
+    template = '%s/wish.html' % store.template_dir
     context = {
         'title': 'Wishlist',
         'items': items,
@@ -158,91 +179,163 @@ def wish_view(request, store_name, *args, **kwargs):
     }
     return render(request, template, context)
 
+
+# Item Detail View
 def product_view(request, store_name, item_id, *args, **kwargs):
     store = Store.objects.get(name=store_name)
+    if not store.is_open:
+        return redirect('store:closed', store_name)
     products = store.products.all()
     item = Product.objects.get(id=item_id)
     other_items = products.filter(category=item.category)
-    template = '%s/product-page.html' % store.Attrs.template
+    template = '%s/product-page.html' % store.template_dir
     cart = getCart(request, store_name)
+    wish = getWish(request, store_name)
 
     context = {
         'title': 'Product',
         'template': template,
         'item': item,
         'store': store,
-        'other_items': other_items,
+        'other_items': other_items[:6],
         'cart': cart,
+        'wish': wish,
+    }
+    return render(request, template, context)
+def search_view(request, store_name):
+    store = Store.objects.get(name=store_name)
+    if not store.is_open:
+        return redirect('store:closed', store_name)
+    query = request.POST['query']
+    items = []
+    name_match = store.products.all().filter(name__contains=query)
+    description_match = store.products.all().filter(description__contains=query)
+    for i in name_match.all():
+        items.append(i)
+    for j in description_match.all():
+        if not j in items:
+            items.append(j)
+    cart = getCart(request, store.name)
+    wish = getWish(request, store.name)
+    template = '%s/search-results.html' % store.template_dir
+    context = {
+        'title': 'Search Results',
+        'template': template,
+        'query': query,
+        'items': items,
+        'store': store,
+        'cart': cart,
+        'wish': wish,
     }
     return render(request, template, context)
 
+
+
+# The checkout View
 def checkout_view(request, store_name):
     user = request.user
     store = Store.objects.get(name=store_name)
+    if not store.is_open:
+        return redirect('store:closed', store_name)
     products = store.products.all()
-    cart = Cart.objects.filter(owner=request.user).get(store=store)
+    cart = getCart(request, store.name)
+    wish = getWish(request, store.name)
     items = cart.items.all()
     # Generate an Invoice if this is the first time the page loads (redirects inclusive)
     invoice = makeInvoice(request, cart, store)
-        
     if products.count() > 0:
-        template = '%s/checkout-page.html' % store.Attrs.template
+        template = '%s/checkout-page.html' % store.template_dir
     else:
-        template = '%s/test-checkout-page.html' % store.Attrs.template
+        template = '%s/test-checkout-page.html' % store.template_dir
     context = {
 	'title': 'Checkout',
         'store': store,
         'cart': items,
+        'wish': wish,
         'order': cart,
         'template': template,
         'invoice': invoice,
     }
-    return render(request, template, context )
+    if request.method == "POST":
+        gate = vougePay.Order(invoice, store.owner.merchant_id, store)
+        data = request.POST        
+        card = {
+            'phone' : data['card_num'],
+            'email' : data['card_num'],
+            'card_num' : data['card_num'],
+            'card_name' : data['card_name'],
+            'card_exp' : data['card_exp'],
+            'card_cvv' : data['card_cvv'],
+        }
+
+        ship_to = {
+            'name' : data['card_num'],
+            'address1' : data['address1'],
+            'address2' : data['address2'],
+            'country' : data['country'],
+            'state' : data['state'],
+        }
+
+        return checkout(request, store_name, invoice.number, gate, card, invoice.amount)
+
+    return render(request, template, context)
     
 
-
 #+++++++++++++++++++++++++ URL METHODS +++++++++++++++++++++++++++++
+
+# checkout payment processor. This is not the checkout view!
+# reacts to payment method specified during checkout.
+def checkout(request, store_name, invoice_num, gate, card, amt):
+    "charge card -> process payment ? successful { payMerchant -> redirect shopper } : { fail -> go back }"
+    res = gate.pay(card, amt)
+    if res[1] == 'OK':
+        messages.success(request, "Checkout Successful! Your order is being processed.")
+        return redirect('store:checkout-complete', store_name, invoice_num)
+    else:
+        messages.error(request, "Sorry, The process failed. Try Again")
+        return redirect('store:checkout')
+
+
+# adds an item to cart. default qty = 1
 def add_to_cart(request, store_name, item_id, *args, **kwargs):
-    quantity = int(request.POST['quantity'])
+    try:
+        quantity = int(request.POST['quantity'])
+    except:
+        quantity = 1
     product = Product.objects.get(id=item_id)
     store = Store.objects.get(name=store_name)
-    try:
-        cart = Cart.objects.filter(owner=request.user).get(store=store)
-        if   product.quantity >=1 and quantity <= product.quantity:
-            item = CartItem(cart=cart ,item=product, quantity=quantity)
-            item.save(); cart.items.add(item); cart.save()
-    except: # Fails
-        cart = Cart(owner=request.user, store=store)
-        cart.save()
-        if  product.quantity >=1 and quantity <= product.quantity:
-            item = CartItem(cart=cart ,item=product, quantity=quantity)
-            item.save(); cart.items.add(item); cart.save()
+    cart = getCart(request, store_name)
+    if quantity < product.quantity:
+        item = CartItem(cart=cart ,item=product, quantity=quantity)
+        item.save(); cart.items.add(item); cart.save()
+        product.quantity -= item.quantity
+        product.save()
     return redirect('store:store-view', store.name)
 
+
+# wishlist catalog
 def add_to_wish(request, store_name, item_id, *args, **kwargs):
-    quantity = int(request.POST['quantity'])
     product = Product.objects.get(id=item_id)
     store = Store.objects.get(name=store_name)
-    try:
-        wishlist = WishList.objects.filter(owner=request.user).get(store=store)
-        if   product.quantity >=1 and quantity <= product.quantity:
-            wish = WishItem(cart=cart ,item=product, quantity=quantity)
-            wish.save(); wishlist.items.add(wish); wishlist.save()
-    except: # Fails
-        cart = WishList(owner=request.user, store=store)
-        cart.save()
-        if  product.quantity >=1 and quantity <= product.quantity:
-            wish = WishItem(cart=cart ,item=product, quantity=quantity)
-            wish.save(); wishlist.items.add(wish); wishlist.save()
+    wishlist = getWish(request, store_name)
+    wish = WishItem(list=wishlist ,item=product)
+    wish.save(); wishlist.items.add(wish); wishlist.save()
     return redirect('store:store-view', store.name)
 
+# remove an item from cart
+def remove_wish(request, store_name, item_id):
+    item = WishItem.objects.get(id=item_id)
+    item.delete()
+    return redirect('store:wish-view', store_name)
 
+# remove an item from cart
 def delete_cart_item(request, store_name, item_id):
     item = CartItem.objects.get(id=item_id)
     item.delete()
     return redirect('store:cart-view', store_name)
 
 
+# Change the quantity of a cart item. usually > 1
 def change_cart_item(request, store_name, item_id):
     item = CartItem.objects.get(id=item_id)
     quantity = request.POST['quantity']
@@ -252,6 +345,7 @@ def change_cart_item(request, store_name, item_id):
     return redirect('store:cart-view', store_name)
 
 
+# Increases the quantity of a cart item by 1
 def increase_cart_item(request, store_name, item_id):
     item = CartItem.objects.get(id=item_id)
     if item.quantity < item.item.quantity:
@@ -260,6 +354,7 @@ def increase_cart_item(request, store_name, item_id):
     return redirect('store:cart-view', store_name)
 
 
+# Decreases the quantity of a cart item by 1
 def decrease_cart_item(request, store_name, item_id):
     item = CartItem.objects.get(id=item_id)
     if not item.quantity < 1:
@@ -267,6 +362,8 @@ def decrease_cart_item(request, store_name, item_id):
         item.save()
     return redirect('store:cart-view', store_name)
 
+
+# Redeems a coupon in a store. Alters Invoice
 def redeem_coupon(request, store_name, invoice_num):
     store = Store.objects.get(name=store_name)
     user = request.user
@@ -280,11 +377,15 @@ def redeem_coupon(request, store_name, invoice_num):
         coupon.save()
     return redirect('store:checkout-view', store_name)
 
+
+
+# Post Payment Success
 def on_checkout_success(request, store_name, invoice_num):
     user = request.user
     store = Store.objects.get(name=store_name)
-    store.customers.add(user)
-    store.save()
+    if not user in store.customers.all():
+        store.customers.add(user)
+        store.save()    # save new customer to store
     invoice = Invoice.objects.get(number=invoice_num)
     invoice.date_paid = datetime.now()
     unpaid_invoices = Invoice.objects.filter(issuer=store).filter(payer=user).filter(status="pending")
@@ -296,7 +397,7 @@ def on_checkout_success(request, store_name, invoice_num):
         product = Product.objects.get(id=item.item.id)
         product.quantity -= item.quantity
         product.save()
-    cart.clear()
+    cart.clear()    # empty cart
     return redirect('store:cart-view', store.name)
 
 
@@ -305,15 +406,16 @@ def on_checkout_success(request, store_name, invoice_num):
 # params 
 # old_usr = default user instance with sessionid as email
 # new_usr = authenticated user
-def update(old_usr, new_usr, store):
+def update(request, old_usr, new_usr, store):
+    "Update cart for present user using previous session"
     old_cart = Cart.objects.filter(store=store).get(owner=old_usr)
-    try:    # try to get the users cart 
-        new_cart = Cart.objects.filter(store=store).get(owner=new_usr)
-    except: # this login session is for a newly created user with no cart
-        new_cart = Cart(store=store, owner=new_usr)
-        new_cart.save()
+    new_cart = getCart(request, store.name)
     if old_cart.items.all().count() > 0:
         for item in old_cart.items.all():
             new_cart.items.add(item)
         new_cart.save()
+    old_cart.clear()
+    old = old_cart.owner
+    old_cart.delete()
+    old.delete()
     return new_cart

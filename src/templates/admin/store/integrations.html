@@ -1,8 +1,162 @@
 {% extends './base.html' %}
 
 {% block content %}
+<style>
+
+.border{
+  border: 2px solid black !important;
+}
 
 
+.d-flex{
+  justify-content: space-between;
+}
+
+
+ul{
+  list-style: none;
+}
+
+
+.trash{
+    position: relative;
+    top: -10px;
+}
+
+
+.trash:hover{
+  transition: .3s;
+  width: 2em !important;
+  height: 2em !important;
+}
+
+.card:hover{
+  .icon{
+    transform: rotate(-30deg);
+  }
+}
+
+.none-icon{
+  cursor: pointer;
+	transition: 2s;
+}
+
+
+.none-icon.search:hover {
+	animation: pop .3s forwards
+}
+
+.none-icon.cpu:hover {
+	transform: rotate(-180deg);
+}
+
+@keyframes pop{
+  0%{
+    width: initial;
+  }
+  50%{
+    width: 5.5em;
+  }
+ 100%{
+    width: initial;
+  }
+}
+</style>
+
+<div class="row mt-5 pb-5">
+  <!-- Vendora Core -->
+  <div class="col-lg-4 mt-3 text-center  pt-3 pb-3">
+    <h5 class="green-text pb-3"> Vendora Plugins </h5>
+    {% for item in ours %}
+        <div class="col-12 card mb-3 pt-3 pb-3 text-left">
+          <ul class="m-0 p-0 ">
+            <li class="d-flex">
+              <svg width="1.5em" height="1.5em" viewBox="0 0 16 16" class="icon green-text bi bi-cpu" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" d="M5 0a.5.5 0 0 1 .5.5V2h1V.5a.5.5 0 0 1 1 0V2h1V.5a.5.5 0 0 1 1 0V2h1V.5a.5.5 0 0 1 1 0V2A2.5 2.5 0 0 1 14 4.5h1.5a.5.5 0 0 1 0 1H14v1h1.5a.5.5 0 0 1 0 1H14v1h1.5a.5.5 0 0 1 0 1H14v1h1.5a.5.5 0 0 1 0 1H14a2.5 2.5 0 0 1-2.5 2.5v1.5a.5.5 0 0 1-1 0V14h-1v1.5a.5.5 0 0 1-1 0V14h-1v1.5a.5.5 0 0 1-1 0V14h-1v1.5a.5.5 0 0 1-1 0V14A2.5 2.5 0 0 1 2 11.5H.5a.5.5 0 0 1 0-1H2v-1H.5a.5.5 0 0 1 0-1H2v-1H.5a.5.5 0 0 1 0-1H2v-1H.5a.5.5 0 0 1 0-1H2A2.5 2.5 0 0 1 4.5 2V.5A.5.5 0 0 1 5 0zm-.5 3A1.5 1.5 0 0 0 3 4.5v7A1.5 1.5 0 0 0 4.5 13h7a1.5 1.5 0 0 0 1.5-1.5v-7A1.5 1.5 0 0 0 11.5 3h-7zM5 6.5A1.5 1.5 0 0 1 6.5 5h3A1.5 1.5 0 0 1 11 6.5v3A1.5 1.5 0 0 1 9.5 11h-3A1.5 1.5 0 0 1 5 9.5v-3zM6.5 6a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-3z"/>
+              </svg>
+              <b class="green-text"> {{item.name}}</b>
+            </li>
+            <li class="pt-2 pb-2"> {{ item.details|safe }} </li>
+          </ul>
+            <p class="text-right text-muted"> {{ item.category }} </p>
+
+          <a class="text-right"> 
+            <svg width="1.3em" height="1.3em" viewBox="0 0 16 16" class="trash red-text bi bi-trash-fill text-danger" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+              <path fill-rule="evenodd" d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5a.5.5 0 0 0-1 0v7a.5.5 0 0 0 1 0v-7z"/>
+            </svg>
+          </a>
+        </div>
+    {% endfor %}
+  </div>
+
+  <!-- Social Media -->
+  <div class="col-lg-3 mt-3 ml-lg-3 mr-lg-3  pt-3 pb-3">
+    <h5 class="blue-text pb-3"> Social Media Plugins </h5>
+
+    {% if socials %}
+
+    {% for item in socials %}
+      <div class="col-12 card mb-3 pt-3 pb-3 text-left">
+       <ul class="m-0 p-0 ">
+            <li class="d-flex">
+              <svg width="1.5em" height="1.5em" viewBox="0 0 16 16" class="icon blue-text bi bi-cpu" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" d="M5 0a.5.5 0 0 1 .5.5V2h1V.5a.5.5 0 0 1 1 0V2h1V.5a.5.5 0 0 1 1 0V2h1V.5a.5.5 0 0 1 1 0V2A2.5 2.5 0 0 1 14 4.5h1.5a.5.5 0 0 1 0 1H14v1h1.5a.5.5 0 0 1 0 1H14v1h1.5a.5.5 0 0 1 0 1H14v1h1.5a.5.5 0 0 1 0 1H14a2.5 2.5 0 0 1-2.5 2.5v1.5a.5.5 0 0 1-1 0V14h-1v1.5a.5.5 0 0 1-1 0V14h-1v1.5a.5.5 0 0 1-1 0V14h-1v1.5a.5.5 0 0 1-1 0V14A2.5 2.5 0 0 1 2 11.5H.5a.5.5 0 0 1 0-1H2v-1H.5a.5.5 0 0 1 0-1H2v-1H.5a.5.5 0 0 1 0-1H2v-1H.5a.5.5 0 0 1 0-1H2A2.5 2.5 0 0 1 4.5 2V.5A.5.5 0 0 1 5 0zm-.5 3A1.5 1.5 0 0 0 3 4.5v7A1.5 1.5 0 0 0 4.5 13h7a1.5 1.5 0 0 0 1.5-1.5v-7A1.5 1.5 0 0 0 11.5 3h-7zM5 6.5A1.5 1.5 0 0 1 6.5 5h3A1.5 1.5 0 0 1 11 6.5v3A1.5 1.5 0 0 1 9.5 11h-3A1.5 1.5 0 0 1 5 9.5v-3zM6.5 6a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-3z"/>
+              </svg>
+              <b class="blue-text"> {{item.get_type_display}}</b>
+            </li>
+            <li class="pt-2 pb-2"> You can now sell on {{ item.type }} by deploying an item using Lync&trade;.
+            Give your shoppers the ultimate shopping experience to buy directly from {{ item.type }}.</li>
+        </ul>
+
+        <a class="text-right"> 
+          <svg width="1.3em" height="1.3em" viewBox="0 0 16 16" class="trash red-text bi bi-trash-fill text-danger" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5a.5.5 0 0 0-1 0v7a.5.5 0 0 0 1 0v-7z"/>
+          </svg>
+        </a>
+      </div>
+    {% endfor %}
+
+    {% else %}
+    <div class="text-center">
+      
+      <svg width="6em" height="6em" viewBox="0 0 16 16" class="none-icon search blue-text mt-4 bi bi-search" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+        <!--
+        <svg width=".5em" height="1em" viewBox="0 0 16 16" class="blue-grey-text bi bi-cpu" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+          <path fill-rule="evenodd" d="M5 0a.5.5 0 0 1 .5.5V2h1V.5a.5.5 0 0 1 1 0V2h1V.5a.5.5 0 0 1 1 0V2h1V.5a.5.5 0 0 1 1 0V2A2.5 2.5 0 0 1 14 4.5h1.5a.5.5 0 0 1 0 1H14v1h1.5a.5.5 0 0 1 0 1H14v1h1.5a.5.5 0 0 1 0 1H14v1h1.5a.5.5 0 0 1 0 1H14a2.5 2.5 0 0 1-2.5 2.5v1.5a.5.5 0 0 1-1 0V14h-1v1.5a.5.5 0 0 1-1 0V14h-1v1.5a.5.5 0 0 1-1 0V14h-1v1.5a.5.5 0 0 1-1 0V14A2.5 2.5 0 0 1 2 11.5H.5a.5.5 0 0 1 0-1H2v-1H.5a.5.5 0 0 1 0-1H2v-1H.5a.5.5 0 0 1 0-1H2v-1H.5a.5.5 0 0 1 0-1H2A2.5 2.5 0 0 1 4.5 2V.5A.5.5 0 0 1 5 0zm-.5 3A1.5 1.5 0 0 0 3 4.5v7A1.5 1.5 0 0 0 4.5 13h7a1.5 1.5 0 0 0 1.5-1.5v-7A1.5 1.5 0 0 0 11.5 3h-7zM5 6.5A1.5 1.5 0 0 1 6.5 5h3A1.5 1.5 0 0 1 11 6.5v3A1.5 1.5 0 0 1 9.5 11h-3A1.5 1.5 0 0 1 5 9.5v-3zM6.5 6a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-3z"/>
+        </svg> -->
+        <path fill-rule="evenodd" d="M10.442 10.442a1 1 0 0 1 1.415 0l3.85 3.85a1 1 0 0 1-1.414 1.415l-3.85-3.85a1 1 0 0 1 0-1.415z"/>
+        <path fill-rule="evenodd" d="M6.5 12a5.5 5.5 0 1 0 0-11 5.5 5.5 0 0 0 0 11zM13 6.5a6.5 6.5 0 1 1-13 0 6.5 6.5 0 0 1 13 0z"/>
+      </svg>
+      <h6 class="mt-4 mb-3"> You Have Not Added Any Social Media. </h6>
+    </div>
+    {% endif %}
+
+  </div>
+
+  <!-- Third Parties -->
+  <div class="col-lg-4 mt-3  pt-3 pb-3">
+    <h5 class="amber-text pb-3"> Third Party Plugins </h5>
+    
+    {% if others %}
+
+    {% for item in others %}
+      <div class="col-12 mb-3">
+        {{item.name}}
+      </div>
+    {% endfor %}
+
+    {% else %}
+    <div class="text-center">
+      <svg width="6em" height="6em" viewBox="0 0 16 16" class="none-icon cpu amber-text mt-4 bi bi-cpu" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+        <path fill-rule="evenodd" d="M5 0a.5.5 0 0 1 .5.5V2h1V.5a.5.5 0 0 1 1 0V2h1V.5a.5.5 0 0 1 1 0V2h1V.5a.5.5 0 0 1 1 0V2A2.5 2.5 0 0 1 14 4.5h1.5a.5.5 0 0 1 0 1H14v1h1.5a.5.5 0 0 1 0 1H14v1h1.5a.5.5 0 0 1 0 1H14v1h1.5a.5.5 0 0 1 0 1H14a2.5 2.5 0 0 1-2.5 2.5v1.5a.5.5 0 0 1-1 0V14h-1v1.5a.5.5 0 0 1-1 0V14h-1v1.5a.5.5 0 0 1-1 0V14h-1v1.5a.5.5 0 0 1-1 0V14A2.5 2.5 0 0 1 2 11.5H.5a.5.5 0 0 1 0-1H2v-1H.5a.5.5 0 0 1 0-1H2v-1H.5a.5.5 0 0 1 0-1H2v-1H.5a.5.5 0 0 1 0-1H2A2.5 2.5 0 0 1 4.5 2V.5A.5.5 0 0 1 5 0zm-.5 3A1.5 1.5 0 0 0 3 4.5v7A1.5 1.5 0 0 0 4.5 13h7a1.5 1.5 0 0 0 1.5-1.5v-7A1.5 1.5 0 0 0 11.5 3h-7zM5 6.5A1.5 1.5 0 0 1 6.5 5h3A1.5 1.5 0 0 1 11 6.5v3A1.5 1.5 0 0 1 9.5 11h-3A1.5 1.5 0 0 1 5 9.5v-3zM6.5 6a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-3z"/>
+      </svg>
+      <h6 class="mt-4 mb-3"> No Third Party Plugins Found. </h6>
+    </div>
+    {% endif %}
+  </div>
+
+
+</div>
 
 {% endblock content %}
 

@@ -1,0 +1,18 @@
+/* Edit your store using this css file */
+
+body{
+    /* background-color: green !importa; */
+}
+
+.page-footer{
+    background-color: black;
+}
+
+.navbar, .nav{
+    background-color: cadetblue !important;
+    width: 100% !important;
+}
+
+.navbar-brand > .blue-text{
+    color: white !important;
+}
