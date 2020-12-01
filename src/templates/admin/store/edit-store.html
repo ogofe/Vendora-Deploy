@@ -1,18 +1,50 @@
 {% extends './base.html' %}
 {% load static %}
 
+{% block extra_head %}
+    <link rel="Stylesheet" href="{% static 'css/admin/store/store.css' %}">
+{% endblock extra_head %}
+
 {% block content %}
 
-<button onclick="history.back(-1)" class="btn badge btn-sm green">
-Back
-</button>
+<style>
+    .edit, .preview{
+        max-height: 600px;
+    }
 
-<a onclick="history.back(-1)" class="btn badge btn-sm blue">
-Save
-</a>
+    .preview{
+        overflow-y: scroll;
+    }
 
-<div class="main" role="main">
+</style>
 
+<div class="text-center tabs-list">
+    <button onclick="history.back(-1)" class="btn badge btn-sm green">
+    Back
+    </button>
+
+    <a onclick="history.back(-1)" class="btn badge btn-sm blue">
+    Save
+    </a>
+</div>
+
+<div class="main row" role="main">
+    <div class="edit blue-grey col-lg-3">
+        <ul>
+            <li class="d-block">
+             <h5> Background Color </h5>
+             <!-- Color Options And Palette-->
+             <ul id="colors" class="colors">
+                <li class="color blue btn p-3 white-text"> Blue </li>
+             </ul>
+            </li>
+        </ul>
+    </div>
+    <div class="preview col-lg-9 mt-5 mt-lg-0">
+
+        {% include 'store/default/test-home-page.html' %}
+
+    </div>
 </div>
 
 
@@ -24,6 +56,8 @@ Save
 
 <script>
 document.getElementById('store-link').style.backgroundColor = 'black';
+document.getElementById('page-main').classList.add('container');
+document.querySelector('.scrolling-navbar').classList.remove('fixed-top')
 
 </script>
 

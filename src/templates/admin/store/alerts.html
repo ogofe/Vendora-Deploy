@@ -15,18 +15,42 @@
         top: 0;
         left: 0;
     }
+    .info {
+	height: 400px;
+	margin-top: 24vh;
+    }
+    .description {
+	margin-top: 2em;
+	color: darkgray;
+    }
 </style>
 
+{% if alerts %}
 <div class="mt-5 row">
-{% for alert in alerts %}
-    <div class="alert card col-md-5 pb-3">
-        <a href="{% url 'vendor:close-alert' store.name alert.id %}" class="close"> &times; </a>
-        <span class="badge red"> {{alert.get_priority_display}} Priority</span>
-        <h5 class="alert-title mb-3 mt-3 blue-grey-text"> {{ alert.title }} </h5>
-        <p class="h6 text-left"> {{alert.message|safe}} </p>
-    </div>
-{% endfor %}
+    {% for alert in alerts %}
+        <div class="alert card col-md-5 pb-3">
+            <a href="{% url 'vendor:close-alert' store.name alert.id %}" class="close"> &times; </a>
+            <span class="badge red"> {{alert.get_priority_display}} Priority</span>
+            <h5 class="alert-title mb-3 mt-3 blue-grey-text"> {{ alert.title }} </h5>
+            <p class="h6 text-left"> {{alert.message}} </p>
+            <a href="{{ alert.cta_link }}" class="cta btn btn-sm badge green"> {{ alert.cta }} </a>
+        </div>
+    {% endfor %}
 </div>
+
+{% else %}
+<div class="text-center m-auto">
+    <div class="info ">
+        <svg width="6em" height="6em" viewBox="0 0 16 16" class="blue-grey-text bi bi-exclamation-circle" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+        <path fill-rule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+        <path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 4.995z"/>
+        </svg>
+
+        <h4 class="description"> No Alerts Found </h4>
+    </div>
+</div>
+
+{% endif %}
 
 {% endblock content %}
 

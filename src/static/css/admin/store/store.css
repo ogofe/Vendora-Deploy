@@ -1,0 +1,149 @@
+#page-main {
+    padding: 0;
+  }
+
+
+.tabs-list {
+  display: flex;
+  justify-content: center;
+  padding: 1em;
+}
+.options btn {
+  box-shadow: 0;
+  font-size: small !important;
+}
+
+.qty {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: .75em;
+}
+
+.discount {
+  position: absolute;
+  bottom: 0;
+  width: inherit;
+  left: 0;
+  font-size: small;
+}
+
+#taskbar {
+  max-width: 370px;
+  margin-top: 2.5em;
+}
+
+@media (min-width: 1125px) {
+  #taskbar {
+    position: fixed;
+    right: 1em;
+    top: 13em;
+    padding: 2em 1em;
+    color: white;
+    text-align: left;
+    height: 60%;
+    margin-top: 2em;
+    max-width: max-content;
+  }
+}
+
+
+.actions {
+  color: white;
+}
+
+#range {
+  justify-content: space-between;
+}
+
+#taskbar{
+  padding: 0;
+}
+
+main {
+  padding-bottom: 5em;
+}
+
+
+.amt{
+  font-size: inherit;
+}
+
+#quick-options .option{
+  
+  transition: .4s;
+}
+
+#quick-options .option:hover{
+  box-shadow: white 0 0 5px;
+}
+
+#cta-coupon {
+  border: 2px solid;
+  background: indianred;
+}
+
+.cta{
+  border: 2px solid cadetblue;
+  background: honeydew;
+  border-radius: 0;
+  padding: .7em 1em !important;
+  display: block;
+  color: seagreen;
+}
+
+.align-center {
+justify-content: center;
+}
+.cta:hover{
+  background: #e0e6e0;
+}
+
+#taskbar {
+border: 2px dashed black;
+box-shadow: 2px 2px 10px;
+margin-left: auto;
+margin-right: auto;
+background: darkslategrey !important;
+}
+
+#addCoupon{
+  max-width: 300px;
+  margin-left: auto;
+  margin-right: auto;
+  background: antiquewhite;
+  border: 2px dashed black;
+  box-shadow: 2px 2px 10px;
+  position: fixed;
+  z-index: 4;
+  top: 22vh;
+}
+
+.allCaps{
+  text-transform: uppercase;
+}
+
+#addCoupon input{
+  display: block;
+  margin: .5em 0;
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+  padding: .5em;
+}
+
+@media (min-width: 320px){
+  #addCoupon{
+      left: 10vw;
+  }
+}
+@media (min-width: 400px){
+  #addCoupon{
+      left: 20vw;
+  }
+}
+@media (min-width: 760px){
+  #addCoupon{
+      left: 40vw;
+  }
+}

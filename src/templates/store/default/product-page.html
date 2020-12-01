@@ -1,7 +1,15 @@
-{% extends './base.html' %}
+{% extends 'default/base.html' %}
 {% load static %}
 
 {% block content %}
+
+  <style>
+
+    #cta-addToCart{
+      padding: .3em .5em !important;
+    }
+
+  </style>
 
   <!--Main layout-->
   <main class="mt-5 pt-4">
@@ -14,7 +22,7 @@
         <div class="col-md-6 mb-4">
 
           <img src={{ item.image.url }} class="img-fluid" alt="">
-
+          <h5 class="text-muted mt-3 text-center"> {{ item.name }} </h5>
         </div>
         <!--Grid column-->
 
@@ -53,21 +61,34 @@
               
             </p>
 
-            <p class="lead font-weight-bold">Description</p>
+            <p class="text-center"> <h5> Sizes </h5>
 
-            <p>
-              {% if item.description %}
-                {{ item.description }}
+              {% if item.sizes.all.count > 0 %}
+                <span class="row">
+                  {% for size in item.sizes.all %}
+                  {% comment %} <option name="size"> {% endcomment %}
+                    <span class="m-1 size p-3">
+                      <input type="radio" value="{{ size.option }}">{{ size.option }}
+                    </span>
+                  {% comment %} </option> {% endcomment %}
+                  {% endfor %}
+                </span>
               {% else %}
-                No Description Available On This Item.
+                No size variant on this item.
               {% endif %}
+
+            </p>
+
+            <p class="text-center"> <h5> In stock </h5> 
+             &times; {{ item.quantity }}
             </p>
 
             <form class="d-flex justify-content-left" method="POST">
             {% csrf_token %}
               <!-- Default input -->
               <input type="number" value="1" aria-label="Search" name="quantity" class="form-control" style="width: 100px">
-              <button formaction="{% url 'store:add-to-cart' store.name item.id %}" class="btn btn-primary btn-md my-0 p" type="submit">Add to cart
+              <button formaction="{% url 'store:add-to-cart' store.name item.id %}" id="cta-addToCart"
+              class="btn btn-primary btn-md my-0 p" type="submit">Add to cart
                 <i class="fas fa-shopping-cart ml-1"></i>
               </button>
             </form>
@@ -89,11 +110,13 @@
         <!--Grid column-->
         <div class="col-md-6 text-center">
 
-          <h4 class="my-4 h4">Additional information</h4>
+          <h4 class="my-4 h4">Item information</h4>
 
-          <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Natus suscipit modi sapiente illo soluta odit
-            voluptates,
-            quibusdam officia. Neque quibusdam quas a quis porro? Molestias illo neque eum in laborum.</p>
+          <p>{% if item.description %}
+                {{ item.description }}
+              {% else %}
+                No Description Available On This Item.
+              {% endif %}</p>
 
         </div>
         <!--Grid column-->
@@ -102,31 +125,23 @@
       <!--Grid row-->
 
       <!--Grid row-->
-      <div class="row wow fadeIn">
-
-        <!--Grid column-->
-        <div class="col-lg-4 col-md-12 mb-4">
-
-          <img src="https://mdbootstrap.com/img/Photos/Horizontal/E-commerce/Products/11.jpg" class="img-fluid" alt="">
-
-        </div>
-        <!--Grid column-->
-
-        <!--Grid column-->
-        <div class="col-lg-4 col-md-6 mb-4">
-
-          <img src="https://mdbootstrap.com/img/Photos/Horizontal/E-commerce/Products/12.jpg" class="img-fluid" alt="">
-
-        </div>
-        <!--Grid column-->
-
-        <!--Grid column-->
-        <div class="col-lg-4 col-md-6 mb-4">
-
-          <img src="https://mdbootstrap.com/img/Photos/Horizontal/E-commerce/Products/13.jpg" class="img-fluid" alt="">
-
-        </div>
-        <!--Grid column-->
+      <div class="row wow fadeIn text-center mt-5 just-center" id="relatedItems">
+        
+        {% for rel_item in other_items %}
+          <!--Grid column-->
+          <div class="col-lg-4 col-md-5 col-sm-8 mb-4">
+            <div class="card text-center">
+              <div class="view">
+                <img src={{ rel_item.image.url }} class="img-fluid" alt="">
+              </div>
+              <h5 class="text-muted"> {{ item.category }} </h5>
+              <h5 class=""> {{ item.name }} </h5>
+              <h4 class="blue-text">{{ store.currency.symbol }} {% if item.discount_price %} {{ item.discount_price }}
+              {% else %} {{ item.price }} {% endif %}</h4>
+            </div>
+          </div>
+          <!--Grid column-->
+        {% endfor %}
 
       </div>
       <!--Grid row-->

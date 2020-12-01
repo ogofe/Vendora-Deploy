@@ -1,0 +1,27 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{store.name}} | We're Closed</title>
+    <style>
+        #info-box {
+            width: 90vw;
+            margin: auto;
+            text-align: center;
+            margin-top: 20vh;
+            background: salmon;
+            color: floralwhite;
+            padding: 3em .5em;
+            font-size: larger;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="info-box" class="m-auto absolute-center">
+        <h3> Sorry we're closed for the day. </h3>
+        <h6> But you can check back at our opening hours : {{opening_hours}} </h6>
+        <h4 id="countdown"></h4>
+    </div>
+</body>
+</html>

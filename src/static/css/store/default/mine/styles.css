@@ -6,3 +6,38 @@
 .mt-7{
     margin-top: 7em;
 }
+
+
+.mb-7{
+    margin-bottom: 7em;
+}
+
+.view{
+    border: 1.5px solid black;
+    padding: .4em;
+}
+
+.just-center{
+    justify-content: center;
+}
+.cart, .wish {
+    width: 5em;
+    justify-content: center;
+    display: inline !important;
+  }
+
+  .count{
+    position: absolute;
+    left: -3px;
+    top: 3px;
+    font-size: 10px;
+  }
+
+  @media (min-width: 800px) and (max-width: 850px) {
+    html,
+    body,
+    header,
+    .carousel {
+      height: 100vh;
+    }
+  }

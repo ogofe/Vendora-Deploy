@@ -1,4 +1,4 @@
- {% extends './base.html' %}
+ {% extends 'default/base.html' %}
  {% load static %} 
 
 {% block content %}
@@ -57,6 +57,11 @@
             }
         }
 
+        /* .page-footer{
+            position: absolute;
+            width: 100%;
+        }
+        */
         @media (max-width: 504px){
             #cart li:not(:last-child){
                 display: block !important;
@@ -74,7 +79,7 @@
                     <span class="text-muted">Your cart</span>
                     <span class="badge badge-secondary badge-pill"> {{ cart.count }} </span>
                 </h4>
-                <ul class="list-group mb-3">
+                <ul class="list-group mb-3 items">
                     {% for item in items %}
                     <li id="item" class="list-group-item d-flex justify-content-between item lh-condensed">
                         <div id="item-wrapper" class="d-flex">
@@ -129,13 +134,19 @@
         </a>
     </div>
 
+{% endblock content %}
+
+  {% block foot_script %}
 <script>
-    let footer = document.getElementById('page-footer')
-    if (document.querySelectorAll('.item').length < 4){
-        footer.style.position = 'fixed !important'
-        footer.style.bottom = '0 !important;'
-        footer.style.width = 'inherit'
+    let footer = document.querySelector('.page-footer')
+    let items = document.querySelector('.items')
+    if(items.scrollHeight < 300){
+        footer.style.position = 'fixed'
+        footer.style.bottom = '0;'
+        footer.style.width = '100%'
         console.log("Footer is", footer)
+        console.log("ITEMS", items)
+
     }
 </script>
-{% endblock content %}
+  {% endblock foot_script %}

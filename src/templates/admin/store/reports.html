@@ -23,7 +23,7 @@
     }
 
     .tab{
-        transition: 1s;
+        justify-content: center;
     }
 
     @media(max-width: 358px){
@@ -46,9 +46,9 @@
 
 
 <!-- TAB INVOICES -->
-<div id="invoices" class="tab row mt-5 ">
+<div id="invoices" class="tab align-center row mt-5 ">
     {% for invoice in invoices %}
-    <div id="invoice-list" class=" card col-md-5 m-2 col-lg-3 mt-2 mb-1">
+    <div id="invoice-list" class=" card col-md-5 m-2 col-lg-4 mt-2 mb-1">
         <ul id="details"> 
             <li class="detail d-flex">
                 <span class="id">#{{ invoice.number }} </span> 
@@ -67,9 +67,9 @@
 
 
 <!-- TAB COUPONS-->
-<div id="coupons" class="tab d-none row mt-5 ">
+<div id="coupons" class="tab align-center d-none row mt-5 ">
     {% for coupon in coupons %}
-        <div id="coupon" class="coupon card col-md-5 mt-2 mb-2 card">
+        <div id="coupon" class="coupon card col-md-5 col-lg-4  m-2 card">
             <ul id="details"> 
                 <li class="detail d-flex">
                     <span class="id">#{{ forloop.counter }} </span> 

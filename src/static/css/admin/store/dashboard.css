@@ -1,6 +1,48 @@
 body {
-    font-size: .875rem;
+    font-size: 1rem;
 }
+
+#store-name {
+	font-size: 1.2rem !important;
+}
+
+.bd-placeholder-img {
+    font-size: 1.125rem;
+    text-anchor: middle;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+
+  @media (min-width: 768px) {
+    .bd-placeholder-img-lg {
+      font-size: 3.5rem;
+    }
+  }
+
+  #settings-wrapper{
+    width: 300px;
+    position: fixed;
+    top: 4em;
+    left: 1em;
+    z-index: 5000;
+    background: white;
+    border: 2px solid black;
+  }
+
+  #settings-wrapper iframe{
+    border: 0;
+    width: 296px;
+    height: 450px;
+  }
+
+  @media(min-width:500px){
+    #settings-wrapper{
+      left: 10%
+    }
+  }
+
 
 .feather {
     width: 16px;
@@ -148,4 +190,12 @@ body {
 .chartjs-render-monitor {
     -webkit-animation: chartjs-render-animation 0.001s;
     animation: chartjs-render-animation 0.001s;
+}
+
+@media (max-width:555px){
+    .chart{
+        height: 350px !important;
+        position: relative !important;
+        
+    }
 }

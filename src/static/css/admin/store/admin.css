@@ -2,6 +2,7 @@
     background-color: var(--dark) ;
     cursor: pointer;
     border-radius: 1.3px;
+    width: 7.7em;
     border: 1px solid white;
 }
 
@@ -11,20 +12,27 @@
 
 #controls{
     position: absolute;
-    top: 3.35em;
-    width: 7.66em;
+    top: 3.2em;
+    width: 7.7em;
     background-color: var(--dark);
     overflow: hidden;
     height: 0;
     text-align: left;
-    padding-left: 10px;
     transition: .21s;
     z-index: 3;
+	/* height: 80px; */
+	border: 1px dashed cornflowerblue;
+    box-shadow: 2px 0 13px black;
+    border-top: 0;
 }
 
+#controls a:hover{
+    background-color: black !important;
+    color: azure;
+}
 .control{
     color: azure;
-    padding: .5em 0;
+    padding: .5em 1em;
 }
 
 #store-name{
@@ -37,7 +45,7 @@
     text-align: left;
     transition: .5s;
     overflow-y: hidden;
-    top: 3.8em;
+    top: 3.6em;
     height: 0;
     z-index: 2;
 }
@@ -64,7 +72,7 @@
 
 .item-image{
     width: 200px;
-    height: 70%;
+    height: 65%;
     align-self: center;
 }
 
@@ -122,7 +130,7 @@ button.close{
     }
 }
 
-:root::-webkit-scrollbar{
+::-webkit-scrollbar{
     width: .5em;
     background-color: transparent;
     padding: 0;
@@ -144,7 +152,8 @@ button.close{
 }
 
 ::selection{
-    background-color: aqua;
+    background-color: cadetblue;
+    color: tomato;
 }
 
 
@@ -159,4 +168,9 @@ button.close{
     border: 1px solid gray;
 	background: coral;
 	color: white;
+}
+
+.chart {
+	display: block !important;
+	padding: 0px !important;
 }

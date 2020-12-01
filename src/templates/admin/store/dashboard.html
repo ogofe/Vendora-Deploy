@@ -1,4 +1,10 @@
 {% extends './base.html' %}
+{% load static %}
+
+{% block extra_head %}
+  <link rel="Stylesheet" href="{% static 'css/admin/store/table.css' %}">
+{% endblock extra_head %}
+
 
 {% block content %}
 
@@ -17,10 +23,59 @@
     <canvas class="col-lg-6 col-12 text-center chart my-4" id="overallSalesChart" width="750em" height="500em"></canvas>
     <canvas class="col-lg-6 col-12 chart my-4" id="daysSalesChart" width="750em" height="500em"></canvas>
   </div>
+
+    
+    <!-- Recent Orders -->
+    <table id="table" class="mb-7 mt-7">
+        <caption class="center t-caption"> Recent Orders From Your Store </caption>
+        <thead class="head">
+            <tr>
+                <td class="t-col idx">#</td>
+                <td class="t-col">Invoice</td>
+                <td class="t-col">Items</td>
+                <td class="t-col">Time</td>
+                <td class="t-col">Total (NGN) </td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="t-col idx item"> 1 </td>
+                <td class="t-col item"> 2113454650 </td>
+                <td class="t-col item prod-list-wrapper">
+                    <ul class="prod-list">
+                        <li class="prod-list-item">
+                            <span class="prod" title="Iphone 11 @ $1,200"> Iphone 11 </span>
+                            <span class="qty"> x14 </span>
+                        </li>
+                        <li class="prod-list-item">
+                            <span class="prod"> Iphone 11 </span>
+                            <span class="qty"> x14 </span>
+                        </li>
+                        <li class="prod-list-item">
+                            <span class="prod"> Iphone 11 </span>
+                            <span class="qty"> x14 </span>
+                        </li>
+                        <li class="prod-list-item">
+                            <span class="prod"> Iphone 11 </span>
+                            <span class="qty"> x14 </span>
+                        </li>
+                    </ul>
+                </td>
+                <td class="t-col item"> 08:23 AM </td>
+                <td class="t-col item"> 43,000.00 </td>
+            </tr>
+
+        </tbody>
+    </table>
+    <script>
+      document.querySelector('.container-fluid').classList.remove('container-fluid')
+    </script>
+
 {% endblock content %}
 
 {% block charts %}
 <script>
+
 (function chart1(){
   'use strict'
 

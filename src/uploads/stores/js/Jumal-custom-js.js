@@ -1,0 +1,1 @@
+/* Add Custom actions to Jumal using this javascript file */

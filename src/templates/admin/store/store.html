@@ -1,108 +1,29 @@
 {% extends './base.html' %}
+{% load static %}
+
+{% block extra_head %}
+  <link rel="Stylesheet" href="{% static 'css/admin/store/store.css' %}">
+{% endblock extra_head %}
 
 {% block content %}
 
-<style>
-  #page-main {
-    padding: 0;
-  }
+<!-- Add a new coupon to the store -->
+<div class="popup mt-2 d-none" id="addCoupon">
+  <form method="post">
+    {% csrf_token %}
+    <p>** Coupon code will be capitalied **</p>
+    <label for="code"> Coupon Code</label>
+    <input type="text" name="code" id="code" class="allCaps" placeholder="Coupon Code">
+    <label for="worth">Coupon Worth ({{store.currency}}) </label>
+    <input type="number" id="worth" name="worth" step="0.01">
+    <label for="validity">Expiration Date <br>(leave blank for infinity) </label>
+    <input type="date" name="validity" id="validity">
+    <input class="cta " type="submit" formaction="{% url 'vendor:add-coupon' store.name %}" value="Save Coupon">
+  </form>
+  <button class="amber btn btn-sm badge" onclick="hideCouponAdder()"> Close </button>
+</div>
+<!-- Coupon -->
 
-  .options btn {
-    box-shadow: 0;
-    font-size: small !important;
-  }
-
-  .qty {
-    position: absolute;
-    top: 0;
-    left: 0;
-    padding: .75em;
-  }
-
-  .discount {
-    position: absolute;
-    bottom: 0;
-    width: inherit;
-    left: 0;
-    font-size: small;
-  }
-
-  #taskbar {
-    max-width: 370px;
-    margin-top: 2.5em;
-  }
-
-  @media (min-width: 1125px) {
-    #taskbar {
-      position: fixed;
-      right: 1em;
-      top: 10em;
-      padding: 2em 1em;
-      color: white;
-      text-align: left;
-      height: 60%;
-      box-shadow: var(--dark) 0px 1px 5px;
-      border-radius: 4px;
-      margin-top: 2em;
-      max-width: max-content;
-    }
-  }
-
-  .actions {
-    color: white;
-  }
-
-  #range {
-    justify-content: space-between;
-  }
-
-  #taskbar-wrapper {
-    justify-content: center;
-  }
-
-  #taskbar{
-    padding: 0;
-    border-radius: 7px !important;
-  }
-
-  main {
-    padding-bottom: 5em;
-  }
-
-  @media (min-width: 1125px) {
-    #taskbar-wrapper.row {
-      display: block;
-      -ms-flex-wrap: no-wrap;
-      flex-wrap: no-wrap;
-      margin: 0;
-
-      position: fixed;
-      right: 2.5em;
-      top: 10em;
-      padding: 2em 1em;
-      color: white;
-      text-align: left;
-      height: 60%;
-      box-shadow: var(--dark) 0px 1px 5px;
-      border-radius: 4px;
-      margin-top: 2em;
-      max-width: 300px;
-    }
-  }
-
-  .amt{
-    font-size: inherit;
-  }
-
-  #quick-options .option{
-    box-shadow: white 0 0 2px;
-    transition: .4s;
-  }
-
-  #quick-options .option:hover{
-    box-shadow: white 0 0 5px;
-  }
-</style>
 
 
 <div class="">
@@ -118,7 +39,7 @@
   <div id="close-popup" class="popup-wrapper  d-none text-center">
     <div id="popup-close" class="hide confirm-popup bg-dark popover text-center">
       <button class="close" onclick="hideClose()"> <span class="text-white-50"> &times; </span> </button>
-      <p class="white-text h6" id="warning"> Are you sure you want to close the store? <br>
+      <p class="white-text h6 warning" id="warningClose"> Are you sure you want to close the store? <br>
         It will not be accessible until you open it again. </p>
       <a href="{% url 'vendor:close' store.name %}" class="btn btn-danger badge btn-sm"> Close Store </a>
       <button class="btn btn-amber badge btn-sm" onclick="hideClose()"> Cancel </button>
@@ -130,28 +51,27 @@
 <h4 id="count" class="badge p-2 red white-text amt text-center"> {{ items.count }} Item{{ items.count|pluralize }} </h4>
 
 
-<div id="taskbar-wrapper" class="row white-text">
-  <div id="taskbar" class="card col-md-6 bg-dark">
-    <div class="btn-group">
-      <input type="search" onkeyup="filter()" placeholder="Type to search..." class="pl-2 form-control rounded-0">
-    </div>
-    <div class="actions mt-3 ml-1 mr-1">
-      <label for="fprice" class="d-block h6">Price</label>
-      <input oninput="setPrice()" class="w-100" type="range" multiple="2" 
-        id="fprice" step="0.01" min="{{store.min}}" max="{{store.max}}">
-      <label for="fprice" id="range" class="d-flex h6">
-        <i>{{ store.currency.symbol }} <i id="price">{{ store.min_int }}</i> </i>
-        <i>{{ store.currency.symbol }} {{store.max_int}}</i>
-      </label>
-    </div>
-    <div id="quick-options" class="text-center mt-2 mt-lg-5">
-      <a onclick="showCouponAdder()" class="option btn btn-md badge blue-grey"> Add Coupon </a>
-    </div>
-
+<div id="taskbar" class="col-md-6 bg-dark">
+  <div class="w-100">
+    <input type="search" onkeyup="filter()" placeholder="Type to search..." class="pl-2 form-control rounded-0">
+  </div>
+  <div class="actions mt-3 ml-1 mr-1">
+    <label for="fprice" class="d-block h6">Price</label>
+    <input oninput="setPrice()" class="w-100" type="range" multiple="2" 
+      id="fprice" step="0.01" min="{{store.min}}" max="{{store.max}}">
+    <label for="fprice" id="range" class="d-flex h6">
+      <i>{{ store.currency.symbol }} <i id="price">{{ store.min_int }}</i> </i>
+      <i>{{ store.currency.symbol }} {{store.max_int}}</i>
+    </label>
+  </div>
+  <div id="quick-options" class="text-center mt-2 mt-lg-5">
+    <a onclick="showCouponAdder()" id="cta-coupon" class="option btn btn-md badge"> Add Coupon </a>
   </div>
 </div>
+<!-- Floating Taskbar -->
 
 
+<!-- Store Items -->
 <div id="items" class="row wow mt-5 p-4 p-lg-0">
 {% if items %}
   {% for item in items %}
@@ -170,10 +90,13 @@
       <h6 class="pt-2"> Sold Out </h6>
     </span>
     {% endif %}
+
+
     <div class="btn-group-sm">
-      <a class="btn badge bg-warning"> Edit </a>
+      <a class="btn badge bg-warning" href="{% url 'vendor:edit-item' store.name item.id %}"> Edit </a>
       <button onclick="confirmDelete({{ forloop.counter }})" class="btn bg-danger badge"> Delete </button>
     </div>
+
     <span class="discount badge blue-grey">
       {% if item.discount_price %}
         {{ store.currency.symbol }} {{ item.discount_price }}<br><br>
@@ -182,20 +105,24 @@
       No Discount
       {% endif %}
     </span>
+
+    <!-- Delete Item Popup -->
     <div id="popup-wrapper{{forloop.counter}}" class="popup-wrapper  d-none text-center">
       <div id="confirm-popup{{forloop.counter}}" class="hide confirm-popup delete bg-dark popover text-center">
         <button class="close" onclick="hideConfirmation({{ forloop.counter }})"> <span class="text-white-50"> &times;
           </span> </button>
-        <p class="white-text" id="warning"> Are you sure you want to delete this item permanently? </p>
+        <p class="white-text warning" id="warningDelete"> Are you sure you want to delete this item permanently? </p>
         <a href="{% url 'vendor:delete-product' store.name item.id %}" class="btn btn-danger badge btn-sm"> Delete </a>
         <button class="btn btn-amber badge btn-sm" onclick="hideConfirmation({{ forloop.counter }})"> Cancel </button>
       </div>
     </div>
+    <!-- Delete Item Popup -->
+
   </div>
   {% endfor %}
 {% endif %}
 </div>
-
+<!-- Store Items-->
 
 {% endblock content %}
 
@@ -204,52 +131,17 @@
 <script>
   document.getElementById('store-link').style.backgroundColor = 'black';
   document.getElementById('page-main').classList.add('container');
+  let coupon = document.getElementById('addCoupon');
 
-  function confirmDelete(num) {
-    document.getElementById(`popup-wrapper${num}`).classList.remove('d-none')
+  function hideCouponAdder(){
+    coupon.classList.add('d-none')
   }
 
-  function hideConfirmation(num) {
-    popup = document.getElementById(`popup-wrapper${num}`)
-    popup.classList.add('d-none')
+  function showCouponAdder(){
+    coupon.classList.remove('d-none')
   }
 
-  function confirmClose() {
-    popup = document.getElementById('close-popup')
-    popup.classList.remove('d-none')
-  }
-
-  function hideClose() {
-    popup = document.getElementById('close-popup')
-    popup.classList.add('d-none')
-  }
-
-  function setPrice() {
-    let value = event.target.value
-    let price = document.getElementById('price')
-    price.innerText = `${value}`
-  }
-
-  function filter() {
-    let count = []
-    let item_count = document.getElementById('count')
-    let items = Array.from(document.querySelectorAll('.item'))
-    let query = event.target.value
-    console.log(query)
-    for (var i = 0; i < items.length; i++) {
-      items[i].classList.add('d-none')
-      if (items[i].firstElementChild.innerText.toLowerCase().search(query.toLowerCase()) >= 0) {
-        items[i].classList.remove('d-none')
-        count.push(items[i])
-      }
-    }
-    let length = count.length
-    if(length === 1){
-      item_count.innerText = `${length.toString()} Item`
-    } else{
-      item_count.innerText = `${length.toString()} Items`
-    }
-  }
-
+</script>
+<script src="{% static 'js/admin/store/store.js' %}">
 </script>
 {% endblock active %}

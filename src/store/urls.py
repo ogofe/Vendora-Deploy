@@ -3,8 +3,10 @@ from store.views import (
     product_view, store_view, cart_view,
     checkout_view, add_to_cart, redeem_coupon,
     on_checkout_success, increase_cart_item,
-    decrease_cart_item, change_cart_item,
-    delete_cart_item, wish_view,
+    decrease_cart_item, change_cart_item, 
+    search_view, add_to_wish, remove_wish,
+    delete_cart_item, wish_view, checkout,
+    closed_view,
 )
 
 # Url routing namespace dependency
@@ -12,10 +14,12 @@ app_name = 'store'
 
 urlpatterns = [
     path('<str:store_name>/', store_view, name='store-view'),
+    path('<str:store_name>/find/', search_view, name='search-view'),
     path('<str:store_name>/item/<int:item_id>/', product_view, name='item-view'),
     path('<str:store_name>/cart/', cart_view, name='cart-view'),
     path('<str:store_name>/wish/', wish_view, name='wish-view'),
     path('<str:store_name>/checkout/', checkout_view, name='checkout-view'),
+    path('<str:store_name>/we-are-closed/', closed_view, name='closed'),
 
     #+++++++++++++++ URL Methods +++++++++++++++++++
 
@@ -25,5 +29,8 @@ urlpatterns = [
     path('<str:store_name>/cart/item/<int:item_id>/minus/', decrease_cart_item, name='minus'),
     path('<str:store_name>/checkout/<str:invoice_num>/coupon/redeem/', redeem_coupon, name='redeem-coupon'),
     path('<str:store_name>/item/<int:item_id>/add-to-cart/', add_to_cart, name='add-to-cart'),
-    path('<str:store_name>/checkout/complete/<int:invoice_num>/', on_checkout_success, name='checkout-complete'),
+    path('<str:store_name>/item/<int:item_id>/add-to-wish/', add_to_wish, name='add-to-wish'),
+    path('<str:store_name>/wish/<int:item_id>/remove/', remove_wish, name='remove-wish'),
+    path('<str:store_name>/checkout/complete/<invoice_num>/', checkout, name='pay'),
+    path('<str:store_name>/checkout/success/<int:invoice_num>/', on_checkout_success, name='checkout-complete'),
 ]

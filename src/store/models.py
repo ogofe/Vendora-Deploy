@@ -1,41 +1,134 @@
+import os
 from django.db import models
 from django.conf import settings
 from django.shortcuts import reverse
 from django.core.validators import MinLengthValidator
+from django.dispatch import Signal
+from accounts.models import Merchant
+from django.contrib.auth.models import User
+from django.core.files import File
 
 
-User = settings.AUTH_USER_MODEL
 SOCIAL_MEDIA = (
     ('facebook', 'Facebook'),
     ('twitter', 'Twitter'),
     ('instagram', 'Instagram'),
     ('craigslist', 'Craigslist'),
+    ('tumblr', 'Tumblr'),
+    ('craigslist', 'Craigslist'),
 )
 
 PAYMENT_CARRIERS = (
     ('remita', 'https://remita.net/'),
+    ('vougepay', 'https://vougepay.com/api'),
     ('paypal', 'http://paypal.com/'),
     ('stripe', 'http://stripe.com/'),
     ('mastercard', 'http://developers.mastercard.com/'),
 )
 
+TEMPLATES_DIR = os.path.join(settings.BASE_DIR, 'templates/store/')
+default_templates_dir = TEMPLATES_DIR
+# default_templates_dir = os.path.join(TEMPLATES_DIR, 'default')
+
+def create_random_id(last:int=None) -> int :
+    _id = '717'
+    if last:
+        if last < 10:
+            _id = str(last) + _id
+            
+        
+
+
 class Store(models.Model):
-    name = models.CharField(max_length=30, unique=True)
-    logo = models.FileField(upload_to='stores/logos', blank=True)
-    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='owner')
-    currency = models.ForeignKey('Currency', default=1, on_delete=models.DO_NOTHING)
-    products = models.ManyToManyField('Product', blank=True, related_name='products')
-    alerts = models.ManyToManyField('vendor.Alert', blank=True, related_name='alerts')
-    carousels = models.ManyToManyField('Carousel', blank=True, related_name='carousels')
-    customers = models.ManyToManyField(User, blank=True, related_name='customers')
-    platforms = models.ManyToManyField('Social', blank=True, related_name='platforms')
+    name            = models.CharField(max_length=30, unique=True)
+    owner           = models.ForeignKey(Merchant, on_delete=models.CASCADE, related_name='owner')
+    logo            = models.FileField(upload_to='stores/logos', blank=True)
+    currency        = models.ForeignKey('Currency', default=1, on_delete=models.DO_NOTHING)
+    date_opened     = models.DateField(auto_now=True)
+    staff_limit     = models.IntegerField(default=2)
+    products        = models.ManyToManyField('Product', blank=True, related_name='products')
+    alerts          = models.ManyToManyField('vendor.Alert', blank=True, related_name='alerts')
+    customers       = models.ManyToManyField(User, blank=True, related_name='customers')
+    carousel        = models.ManyToManyField('CarouselItem', blank=True, related_name='carousel')
+    platforms       = models.ManyToManyField('Social', blank=True, related_name='platforms')
     payment_methods = models.ManyToManyField('PaymentMethod', blank=True, related_name='payment_methods')
-    invoices = models.ManyToManyField('Invoice', blank=True)
-    campaigns = models.ManyToManyField('Campaign', blank=True, related_name='campaigns')
-    coupons = models.ManyToManyField('Coupon', blank=True, related_name='coupon')
-    is_open = models.BooleanField(default=True)
-    date_opened = models.DateField(auto_now=True)
-    blocked = models.BooleanField(default=False)
+    campaigns       = models.ManyToManyField('Campaign', blank=True, related_name='campaigns')
+    coupons         = models.ManyToManyField('Coupon', blank=True, related_name='coupon')
+    plugins         = models.ManyToManyField("plugins.Plugin", blank=True)
+    staff_accounts  = models.ManyToManyField(User, default=owner)
+    custom_css      = models.FileField(upload_to='stores/css', blank=True)
+    custom_js       = models.FileField(upload_to='stores/js', blank=True)
+    template_dir    = models.FilePathField(allow_folders=True, allow_files=False, blank=True,
+                                           max_length=400, path=default_templates_dir,
+                                           default=default_templates_dir)
+    is_open         = models.BooleanField(default=True)
+    blocked         = models.BooleanField(default=False)
+    is_setup        = models.BooleanField(default=False)
+    
+    class Attrs:
+        newly_created = True
+        is_admin_logged_in = True
+        integrations = []
+        access = ''
+        refresh = ''
+        api_public =  ''
+        api_private = ''
+        
+    def _products(self):
+        return self.products.all()
+
+    def setup(self):
+        self.install_default_plugins()        
+        # if the store was accidentaly marked for setup
+        # don't  overwrite it's files
+        path = str(settings.MEDIA_ROOT)
+        if not self.is_setup: 
+            csspath = str(os.path.join(settings.MEDIA_ROOT, 'stores/css/'))
+            jspath = str(os.path.join(settings.MEDIA_ROOT, 'stores/js/'))
+            try:
+                os.chdir(os.path.join(settings.MEDIA_ROOT, 'stores/'))
+                os.mkdir('css')
+                os.mkdir('js')
+            except:
+                pass
+            
+            # generate file name from path and storename
+            css_filename = csspath + self.namify() + '-custom-css.css'
+            js_filename = jspath + self.namify() + '-custom-js.js'
+            
+            # Creating css file object
+            with open(css_filename, 'w') as cssfile:
+                _file = File(cssfile)
+                _file.write('/* Edit your store using this css file */\n')
+                _file.close()
+                self.custom_css.name = _file.name.replace(path, '')
+            # js file object
+            with open(js_filename, 'w') as jsfile:
+                _file = File(jsfile)
+                _file.write('/* Add Custom actions to %s using this javascript file */\n' % self.name)
+                _file.close()
+                self.custom_js.name = _file.name.replace(path, '')
+            print('Storage of JS FILE : ', self.custom_js.storage)
+            # save the changes
+            self.is_setup = True
+            self.save()
+        return True
+    
+
+    def install_default_plugins(self):
+        "Installs the default plugins to a store"
+        from plugins.models import Plugin
+        plugins = list(Plugin.objects.filter(ours=True))
+        for plugin in plugins:
+            self.plugins.add(plugin)
+        self.save()
+        return True
+
+    def is_staff(self, user):
+        "returns True if user is a staff in this store"
+        if user in self.staff_accounts.all():
+            return True
+        return False
 
     def get_absolute_url(self):
         return reverse('store:store-view', kwargs={"store_name": self.name})
@@ -84,30 +177,12 @@ class Store(models.Model):
                         cats.append(cat)
         return cats[:3]
 
-    class Attrs:
-        template = 'default'
-        font = 'default',
-        font_size = 'default'
-        background = 'default'
-        newly_created = True
-        is_admin_logged_in = True
-        integrations = []
-        bank_name = ''  # e.g first bank, paypal
-        acc_name = ''   # e.g Joel Tanko
-        acc_nummber = '' # e.g 3112330982, example@paypal.com
-        access = ''
-        refresh = ''
-        api_public =  ''
-        api_private = ''
+        
+    def namify(self)-> str:
+        "Converts white spaces to underscores"
+        name = self.name.replace(' ', '_')
+        return name
 
-    class Header:
-        background = 'default'
-        font = 'default',
-        font_size = 'default'
-        title = ''
-        sub_title = ''
-        content = ''
-        hidden = False
 
     def __str__(self):
         return self.name
@@ -145,8 +220,6 @@ class Coupon(models.Model):
                 return True
             return True
 
-            
-
 class Social(models.Model):
     link = models.CharField(max_length=200, unique=True)
     store = models.ForeignKey('Store', on_delete=models.CASCADE)
@@ -156,18 +229,18 @@ class Social(models.Model):
         return self.type.title()
     
 
-class Carousel(models.Model):
-    store = models.ForeignKey('Store', on_delete=models.CASCADE)
-    header = models.CharField(max_length=300)
-    items = models.ManyToManyField('CarouselItem', blank=True, related_name='items')
-    hidden = models.BooleanField(default=False)
-    class Attrs:
-        background = 'default'
-        font = 'default'
-        font_size = 'default'
+# class Carousel(models.Model):
+#     store = models.ForeignKey('Store', on_delete=models.CASCADE)
+#     header = models.CharField(max_length=300)
+#     items = models.ManyToManyField('CarouselItem', blank=True, related_name='items')
+#     hidden = models.BooleanField(default=False)
+#     class Attrs:
+#         background = 'default'
+#         font = 'default'
+#         font_size = 'default'
 
 class CarouselItem(models.Model):
-    carousel = models.ForeignKey('Carousel', on_delete=models.CASCADE, related_name='carousel')
+    store = models.ForeignKey('Store', on_delete=models.CASCADE, related_name='store')
     caption = models.CharField(max_length=50, blank=True, null=True)
     content = models.TextField(blank=True, null=True)
     image = models.FileField(upload_to='stores/carousel/', blank=True, null=True)
@@ -193,12 +266,9 @@ class Currency(models.Model):
     
 
 class PaymentMethod(models.Model):
-    store = models.ForeignKey('Store', on_delete=models.CASCADE)
-    type = models.CharField(max_length=30, choices=PAYMENT_CARRIERS)
-    gateway_link = models.CharField(max_length=200, blank=True, unique=True)   # link to payment api gateway. e.g https://remita.net/api/payment
-    user_id = models.CharField(max_length=30, blank=True, null=True)    # user_id from api (if given)
-    secret_key = models.CharField(max_length=300, blank=True)   # Gateway API secret key
-    public_key = models.CharField(max_length=300, blank=True) # Public Key
+    store = models.ForeignKey(Store, on_delete=models.CASCADE)
+    api = models.CharField(max_length=30, choices=PAYMENT_CARRIERS)
+    token = models.CharField(max_length=30, blank=True, null=True)    # user_id from api (if given)
 
     def setup(self):
         "Setup this payment method for this store"
@@ -206,8 +276,9 @@ class PaymentMethod(models.Model):
         return True
     
     def __str__(self):
-        return self.type
+        return self.api
     
+
 
 class Invoice(models.Model):
     issuer = models.ForeignKey('Store', on_delete=models.CASCADE)
@@ -285,17 +356,23 @@ class WishList(models.Model):
     items = models.ManyToManyField('WishItem', blank=True)
 
     def __str__(self):
-        return self.owner
+        return f'{self.owner}\'s Wish list'
     
     def count(self):
         return self.items.all().count()
     
+    
+    def clear(self):
+        for i in self.items.all():
+            i.delete()
 
 class WishItem(models.Model):
     list = models.ForeignKey('WishList', on_delete=models.CASCADE)
     item = models.ForeignKey('Product', on_delete=models.CASCADE)
-    quantity = models.IntegerField(default=1)
-
+    
+    def __str__(self):
+        return f'{self.list.owner}\'s wishlist item | Store : {self.list.store} '
+    
 
 class Product(models.Model):
     store = models.ForeignKey('Store', on_delete=models.CASCADE)
@@ -303,8 +380,8 @@ class Product(models.Model):
     image = models.FileField(upload_to='stores/products')
     price = models.DecimalField(decimal_places=2, max_digits=10)
     discount_price = models.DecimalField(decimal_places=2, max_digits=10, blank=True, null=True)
+    quantity = models.IntegerField()
     description = models.TextField(blank=True, null=True)
-    quantity = models.IntegerField(blank=True)
     sizes = models.ManyToManyField('SizeVariant', blank=True)
     colors = models.ManyToManyField('ColorVariant', blank=True)
     category = models.ForeignKey('Category', on_delete=models.CASCADE, related_name='category')
@@ -313,6 +390,14 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
+    
+    def tag(self):
+        tag = ''
+        try:
+            tag = list(self.tags.all())[0]
+        except: # no tags on item
+            tag = None
+        return tag
     
     def currency(self):
         currency = self.store.currency
@@ -360,4 +445,27 @@ class SizeVariant(models.Model):
     def __str__(self):
         return self.option
     
+    
 
+DELIVERY_STATUS = (
+    ('null', 'Not-Started'),
+    ('moving', 'On Route'),
+)
+
+class Order(models.Model):
+    store = models.OneToOneField(Store, models.CASCADE)
+    invoice = models.OneToOneField(Invoice, models.CASCADE)
+    tracking_id = models.IntegerField()
+    date = models.DateTimeField(auto_now=True)
+    delivered = models.BooleanField(default=False)
+    delivery_status = models.CharField(max_length=100, choices=DELIVERY_STATUS, default='null')
+    
+    def __str__(self):
+        return 'Order for Shopper: %s | Store : %s' % (self.person(), self.store)
+    
+    def person(self):
+        "return the shopper's username"
+        return self.invoice.payer
+    
+    def items(self):
+        return list(self.invoice.cart.items.all())

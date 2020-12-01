@@ -3,9 +3,7 @@ from django.http import StreamingHttpResponse
 from django.shortcuts import render, redirect, HttpResponsePermanentRedirect
 from store.models import (
     Store, Invoice, PaymentMethod,
-    Category, Coupon,
-    Tag,
-    Product,
+    Category, Coupon, Tag, Product,
 )
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, logout
@@ -15,36 +13,48 @@ from vendor.models import Alert
 
 
 
-def is_store_owner(request, store_name):
-    """Checks the owner of a store and redirects 
+def is_staff(request, store_name):
+    """Checks the owner or staffs of a store and redirects 
     to the appropriate store. Handy for url pasting"""
     store = Store.objects.get(name=store_name)
     user = request.user
-    other_stores = Store.objects.all().filter(owner=user)
-    for i in other_stores.all():
-        i.Attrs.is_admin_logged_in = False
-    if store.owner == user:
-        store.Attrs.is_admin_logged_in = True
-        return True
-    else:
+    try:    # is this user the store's owner?
+        other_stores = Store.objects.all().filter(owner=user.merchant)
+        if store.owner == user.merchant:
+            store.Attrs.is_admin_logged_in = True
+            for i in other_stores.all():
+                i.Attrs.is_admin_logged_in = False
+            return True
+        elif user in store.staff_accounts.all():
+            return True
         return False
+    except: # or a staff?
+        if store.is_staff(user):
+            return True
+        else:
+            return False
+    else:
+        return False    # Breach!
+    
+
 
 @login_required(login_url='accounts:login')
 def dashboard_view(request, store_name):
     store = Store.objects.get(name=store_name)
-    if not is_store_owner(request, store.name):
+    if not is_staff(request, store.name):
         return redirect('accounts:error_503')
-    if not store.Attrs.is_admin_logged_in:
-        return redirect('accounts:error_503')
+    # if not store.Attrs.is_admin_logged_in:
+    #     return redirect('accounts:error_503')
     context = {
         'store': store,
     }
+    
     return render(request, 'admin/store/dashboard.html', context)
 
 
 @login_required(login_url='accounts:login')
 def store_view(request, store_name):
-    if not is_store_owner(request, store_name):
+    if not is_staff(request, store_name):
         return redirect('accounts:error_503')
     store = Store.objects.get(name=store_name)
     items = store.products.all().order_by('-id')
@@ -59,7 +69,7 @@ def store_view(request, store_name):
 
 @login_required(login_url='accounts:login')
 def edit_store_view(request, store_name):
-    if not is_store_owner(request, store_name):
+    if not is_staff(request, store_name):
         return redirect('accounts:error_503')
     store = Store.objects.get(name=store_name)
     items = store.products.all()
@@ -72,7 +82,7 @@ def edit_store_view(request, store_name):
 
 @login_required(login_url='accounts:login')
 def add_item_view(request, store_name):
-    if not is_store_owner(request, store_name):
+    if not is_staff(request, store_name):
         return redirect('accounts:error_503')
     store = Store.objects.get(name=store_name)
     
@@ -85,7 +95,7 @@ def add_item_view(request, store_name):
 
 @login_required(login_url='accounts:login')
 def customers_view(request, store_name):
-    if not is_store_owner(request, store_name):
+    if not is_staff(request, store_name):
         return redirect('accounts:error_503')
     user = request.user
     store = Store.objects.get(name=store_name)
@@ -98,7 +108,7 @@ def customers_view(request, store_name):
 
 @login_required(login_url='accounts:login')
 def alerts_view(request, store_name):
-    if not is_store_owner(request, store_name):
+    if not is_staff(request, store_name):
         return redirect('accounts:error_503')
     store = Store.objects.get(name=store_name)
     alerts = Alert.objects.filter(store=store).order_by('-date')
@@ -111,7 +121,7 @@ def alerts_view(request, store_name):
 
 @login_required(login_url='accounts:login')
 def reports_view(request, store_name):
-    if not is_store_owner(request, store_name):
+    if not is_staff(request, store_name):
         return redirect('accounts:error_503')
     store = Store.objects.get(name=store_name)
     invoices = Invoice.objects.filter(issuer=store).all()
@@ -125,13 +135,25 @@ def reports_view(request, store_name):
 
 @login_required(login_url='accounts:login')
 def integrations_view(request, store_name):
-    if not is_store_owner(request, store_name):
+    if not is_staff(request, store_name):
         return redirect('accounts:error_503')
     store = Store.objects.get(name=store_name)
-    integrations = []
+    ours = []
+    others = []
+    socials = []
+    for plugin in store.plugins.all():
+        if plugin.ours:
+            ours.append(plugin)
+        else:
+            others.append(plugin)
+
+    for platform in store.platforms.all():
+        socials.append(platform)
     context = {
         'store': store,
-        'integrations': integrations,
+        'ours': ours,
+        'others': others,
+        'socials': socials,
     }
     return render(request, 'admin/store/integrations.html', context)
 
@@ -189,6 +211,8 @@ def create_product(request, store_name):
     product.save_base()
     if data['discount']:
         product.discount_price = data['discount']
+    if data['description']:
+        product.description = data['description']
     if request.POST.get('sub_cats'):
         product.sub_cats.add(Category.objects.get(name=data['sub_cats']).id)
     if request.POST.get('tags'):
@@ -196,6 +220,56 @@ def create_product(request, store_name):
     product.save()
     store.products.add(product)
     store.save()
+    return redirect('vendor:store', store_name)
+
+
+@login_required(login_url='accounts:login')
+def edit_product(request, store_name, item_id):
+    store = Store.objects.get(name=store_name)
+    item = Product.objects.get(id=item_id)
+    cats = Category.objects.all()
+    tags = Tag.objects.all()
+    if request.method == 'POST':
+        files = request.FILES
+        data = request.POST
+        item.name = data['name']; item.price = data['price']
+        item.quantity = data['quantity']
+        if data['discount']:
+            item.discount_price = data['discount']
+        if data['description']:
+            item.description = data['description']
+        if request.POST.get('sub_cats'):
+            product.sub_cats.add(Category.objects.get(name=data['sub_cats']).id)
+        if request.POST.get('tags'):
+            product.tags.add(Tag.objects.get(name=data['tags']).id)
+        try:
+            if files['image']:
+                item.image = files['image']
+        except:
+            pass
+        item.save()
+        return redirect('vendor:store', store_name)
+    context = {
+        'store': store,
+        'item' : item,
+        'cats' : cats,
+        'tags' : tags,
+    }
+    return render(request, 'admin/store/edit-item.html', context)
+
+@login_required(login_url='accounts:login')
+def create_coupon(request, store_name):
+    store = Store.objects.get(name=store_name)
+    data = request.POST
+    coupon = Coupon(worth=data['worth'], store=store, code= str(data['code']).upper())
+    try:
+        expires = data['validity']
+        if expires:
+            coupon.validity = expires
+    except:
+        pass
+    coupon.save()
+    store.coupons.add(coupon)
     return redirect('vendor:store', store_name)
 
 
