@@ -44,14 +44,10 @@
               <div class="card-body text-center">
                 <!--Category & Title-->
                 <a href="{% url 'store:item-view' store.name item.item.id %}" class="grey-text">
-                  <h5>{{ item.item.category }}</h5>
-                <h5>
-                  <strong class="dark-grey-text">{{ item.item.name }}
-                      <span class="badge badge-pill danger-color">{{item.item.tag}}</span>
-                    </a>
-                  </strong>
-                </h5>
-
+                    <h5>{{ item.item.category }}</h5>
+                    <h5><strong class="dark-grey-text">{{ item.item.name }}</strong></h5>
+                    {% if item.item.tag %}<span class="badge badge-pill danger-color">{{item.item.tag}}</span>{% endif %}
+                </a>
                 <h4 class="font-weight-bold blue-text">
                   <strong>{{ store.currency.symbol }}{{item.item.price}}</strong>
                 </h4>
