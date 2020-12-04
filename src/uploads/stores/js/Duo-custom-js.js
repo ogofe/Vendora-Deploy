@@ -1,1 +1,0 @@
-/* Add Custom actions to Duo using this javascript file */

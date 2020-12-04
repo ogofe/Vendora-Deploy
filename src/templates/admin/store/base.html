@@ -29,14 +29,14 @@
         <button onclick="toggleNav()" id="nav-toggle" class="navbar-toggler navbar-dark waves-effect waves">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <a href="{% url 'store:store-view' store.name %}" target="_blank" class="white-text  navbar-brand" id="store-name"> {{ store.name }} </a>
+        <a href="{% url 'store:store-view' store.slug %}" target="_blank" class="white-text  navbar-brand" id="store-name"> {{ store.name }} </a>
     </div>
     <div>
       <button onclick="toggleOptions()" class="chip p-2 text-white">
           {{ user.first_name }} {{ user.last_name }}
       </button>
       <div id="controls">
-        <a href="{% url 'vendor:logout' store.name %}" class="d-block control"> Sign Out </a>
+        <a href="{% url 'vendor:logout' store.slug %}" class="d-block control"> Sign Out </a>
         <a onclick="showSettings()" class="d-block control"> Settings </a>
     </div>
     </div>
@@ -55,12 +55,12 @@
   <div id="page">
     <div id="page-nav" class="container sticky-top bg-dark text-white text-center">
       <ul id="nav" class="p-0 pt-3">
-        <li class="nav-item" id="dashboard-link"> <a class="nav-link" href="{% url 'vendor:dashboard' store.name %}"> Dashboard </a> </li>
-        <li class="nav-item" id="store-link"> <a class="nav-link" href="{% url 'vendor:store' store.name %}"> Store </a> </li>
-        <li class="nav-item" id="customers-link"> <a class="nav-link" href="{% url 'vendor:customers' store.name %}"> Customers </a> </li>
-        <li class="nav-item" id="integrations-link"> <a class="nav-link" href="{% url 'vendor:integrations' store.name %}"> Integrations </a> </li>
-        <li class="nav-item" id="alerts-link"> <a class="nav-link" href="{% url 'vendor:alerts' store.name %}"> Alerts </a> </li>
-        <li class="nav-item" id="reports-link"> <a class="nav-link" href="{% url 'vendor:reports' store.name %}"> Reports </a> </li>
+        <li class="nav-item" id="dashboard-link"> <a class="nav-link" href="{% url 'vendor:dashboard' store.slug %}"> Dashboard </a> </li>
+        <li class="nav-item" id="store-link"> <a class="nav-link" href="{% url 'vendor:store' store.slug %}"> Store </a> </li>
+        <li class="nav-item" id="customers-link"> <a class="nav-link" href="{% url 'vendor:customers' store.slug %}"> Customers </a> </li>
+        <li class="nav-item" id="integrations-link"> <a class="nav-link" href="{% url 'vendor:integrations' store.slug %}"> Integrations </a> </li>
+        <li class="nav-item" id="alerts-link"> <a class="nav-link" href="{% url 'vendor:alerts' store.slug %}"> Alerts </a> </li>
+        <li class="nav-item" id="reports-link"> <a class="nav-link" href="{% url 'vendor:reports' store.slug %}"> Reports </a> </li>
       </ul>
     </div>
 
@@ -72,7 +72,7 @@
         </main>
 
         <div id="settings-wrapper" class="settings-wrapper box d-none">
-          <iframe src="{% url 'vendor:settings' store.name %}"></iframe>
+          <iframe src="{% url 'vendor:settings' store.slug %}"></iframe>
           <button onclick="hideSettings()" class="btn btn-sm badge amber white-text"> close </button>
         </div>
     </div>

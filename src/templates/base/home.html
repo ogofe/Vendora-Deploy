@@ -1,4 +1,6 @@
 {% load static %}
+{% comment %} {% load hosts %} {% endcomment %}
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -10,7 +12,7 @@
     <title>Vendora</title>
 </head>
 <body>
-    <nav class="navbar sticky-top bg-dark text-white" id="nav">
+    <nav class="navbar sticky-top bg-dark-blue text-white" id="nav">
         <div class="container">
             <h1 class="navbar-brand"> Vendora! </h1>
             <div class="btn-group">
@@ -23,7 +25,7 @@
             </a>
             {% else %}
                 {% if store %}
-                <a class="btn bg-primary white-text" href="{% url 'vendor:dashboard' store.name %}">
+                <a class="btn bg-primary white-text" href="{% url 'vendor:dashboard' store.slug %}">
                     {{store.name}} Admin
                 </a>
                 {% endif %}
@@ -34,8 +36,11 @@
         </div>
     </nav>
 
-    <section class=" bg-dark text-white" id="intro">
-        <div id="intro-content">
+    <section class=" bg-dark-blue bg-store text-white row" id="intro">
+        {% comment %} <div id="img1" class="col col-lg-6">
+            <img src="{% static 'img/jpg/online-store.jpg' %}" id="online-store" class="img img-fluid">
+        </div> {% endcomment %}
+        <div id="intro-content" class="col col-lg-6">
             <h4> Welcome To Your New Online Store! </h4>
             <p> {% lorem 1 b  %} </p>
         </div>
@@ -47,7 +52,7 @@
             <article>{% lorem 2 b %} </article>
         </section>
 
-        <section id="about" class="madagascar">
+        <section id="about" class="">
             <div id="customize">
                 <img src="{% static 'img/svg/base/customize.svg' %}" id="customize-image">
                 <div id="customize-content">

@@ -24,7 +24,7 @@
             <div class="view overlay">
             <img src={{item.image.url}} class="card-img-top" size="200em"
                 alt="">
-            <a href="{% url 'store:item-view' store.name item.id %}">
+            <a href="{% url 'store:item-view' store.slug item.id %}">
                 <div class="mask rgba-white-slight"></div>
             </a>
             </div>
@@ -33,12 +33,12 @@
             <!--Card content-->
             <div class="card-body text-center">
             <!--Category & Title-->
-            <a href="{% url 'store:item-view' store.name item.id %}" class="grey-text">
+            <a href="{% url 'store:item-view' store.slug item.id %}" class="grey-text">
                 <h5>{{item.category|title}}</h5>
             </a>
             <h5>
                 <strong>
-                <a href="{% url 'store:item-view' store.name item.id %}" class="dark-grey-text">{{item.name}}<br />
+                <a href="{% url 'store:item-view' store.slug item.id %}" class="dark-grey-text">{{item.name}}<br />
                 {% if not item.quantity <= 0 %}
                     {% for tag in item.tags.all %}
                         <span class="badge badge-pill danger-color">{{tag.name|title}}</span>

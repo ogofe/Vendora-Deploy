@@ -98,15 +98,15 @@
 
                         <div id="control-wrapper">
                             <div class="btn-group">
-                                <a class="btn btn-blue " href="{% url 'store:minus' store.name item.id %}"> - </a>
-                                <form method="POST" id="qty" action="{% url 'store:change-cart-quantity' store.name item.id %}">
+                                <a class="btn btn-blue " href="{% url 'store:minus' store.slug item.id %}"> - </a>
+                                <form method="POST" id="qty" action="{% url 'store:change-cart-quantity' store.slug item.id %}">
                                     {% csrf_token %}
                                     <input type="number" id="form-qty" name="quantity" value={{item.quantity}} title="
                                 Hit enter when done.
                                 ">
                                 </form>
-                                <a class="btn btn-danger" href="{% url 'store:plus' store.name item.id %}"> + </a>
-                                <a class="btn btn-dark" href="{% url 'store:delete-cart-item' store.name item.id %}"> &times; </a>
+                                <a class="btn btn-danger" href="{% url 'store:plus' store.slug item.id %}"> + </a>
+                                <a class="btn btn-dark" href="{% url 'store:delete-cart-item' store.slug item.id %}"> &times; </a>
                             </div>
                         </div>
                     </li>
@@ -121,13 +121,13 @@
             </div>
         </div>
 
-        <a id="checkout" href="{% url 'store:store-view' store.name %}" class="btn bg-primary text-white">
+        <a id="checkout" href="{% url 'store:store-view' store.slug %}" class="btn bg-primary text-white">
             Continue Shopping
         </a>
 
         <a id="checkout" 
         {% if cart.count > 0 %}
-	        href="{% url 'store:checkout-view' store.name %}" 
+	        href="{% url 'store:checkout-view' store.slug %}" 
 	{% endif %}
         class="btn btn-cyan">
             Proceed to ckeckout

@@ -6,6 +6,17 @@
 
 {% block content %}
 
+<style>
+
+#image-svg {
+    margin: inherit;
+    margin-left: 3em;
+    cursor: pointer;
+    width: 5em;
+    height: 7em;
+}
+</style>
+
 <button onclick="history.back(-1)" class="btn badge btn-sm green mt-2 mb-3">
 Back
 </button>
@@ -41,8 +52,13 @@ Back
                     class="mt-2 p-2" cols="30" rows="10"></textarea>
 
                 <label for="image" class="mt-3">* Item Image: <br>
+                    <svg id="image-svg" width="2.5em" height="2em" viewBox="0 0 16 16" class="bi bi-file-image" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" d="M4 0h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zm0 1a1 1 0 0 0-1 1v10l2.224-2.224a.5.5 0 0 1 .61-.075L8 11l2.157-3.02a.5.5 0 0 1 .76-.063L13 10V2a1 1 0 0 0-1-1H4z"/>
+                        <path fill-rule="evenodd" d="M6.502 7a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/>
+                    </svg>
                     <input oninput="setImage()" id="image" name="image" type="file" required="true"
-                        class='border rounded mt-2 bg-dragula' aria-label="Select Item Image">
+                        class='border rounded mt-2 d-none' aria-label="Select Item Image">
+                    <p id="image-name"> No file Selected.</p>
                 </label>
 
 
@@ -74,7 +90,7 @@ Back
 
 
                 <input type="submit" class='btn btn-secondary' value="Create Product"
-                    formaction="{% url 'vendor:create-product' store.name  %}">
+                    formaction="{% url 'vendor:create-product' store.slug  %}">
                 
             </form>
             <button onclick="togglePreview()" id="preview-btn" class="btn badge btn-dark">Preview</button>
@@ -125,6 +141,8 @@ Back
     function setImage() {
         let image = document.getElementById('image')
         console.log('image', image)
+        let name = image.files[0].name
+        document.querySelector('#image-name').innerText = `Image : ${name}`
         document.getElementById('preview-image').attributes.setNamedItem('src', `${image}`)
     }
 

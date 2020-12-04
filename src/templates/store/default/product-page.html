@@ -87,7 +87,7 @@
             {% csrf_token %}
               <!-- Default input -->
               <input type="number" value="1" aria-label="Search" name="quantity" class="form-control" style="width: 100px">
-              <button formaction="{% url 'store:add-to-cart' store.name item.id %}" id="cta-addToCart"
+              <button formaction="{% url 'store:add-to-cart' store.slug item.id %}" id="cta-addToCart"
               class="btn btn-primary btn-md my-0 p" type="submit">Add to cart
                 <i class="fas fa-shopping-cart ml-1"></i>
               </button>
