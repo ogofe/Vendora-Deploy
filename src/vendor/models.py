@@ -46,15 +46,20 @@ INTEGRATIONS = (
 class Alert(models.Model):
     priority = models.IntegerField(choices=PRIORITIES)
     message = models.TextField()
-    title = models.CharField(max_length=300)
+    subject = models.CharField(max_length=300)
     store = models.ForeignKey('store.Store', on_delete=models.CASCADE)
-    maker = models.CharField(max_length=150, default='Vendor Bot')
+    sender = models.CharField(max_length=150, default='Vendor Bot')
     date = models.DateTimeField(auto_now=True)
-    cta = models.CharField(max_length=30, blank=True)
+    action = models.CharField(max_length=30, blank=True)
     cta_link = models.URLField(max_length=30, blank=True)
+    unread = models.BooleanField(default=True)
+
+    def mark_as_read(self):
+        self.unread = False
+        self.save()
 
     def __str__(self):
-        return self.title
+        return self.subject
 
 
 # class Integration(models.Model):

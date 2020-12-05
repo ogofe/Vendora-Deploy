@@ -9,5 +9,12 @@ class AdminAlert(admin.ModelAdmin):
         'date', 
         'priority',
     ]
+    actions = [
+        'error'
+    ]
 
+    def error(self, request, queryset):
+        e = Exception('A Failure on purpose!')
+        raise e
+        return e
 admin.site.register(Alert, AdminAlert)

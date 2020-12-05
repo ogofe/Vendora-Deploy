@@ -1,1 +1,0 @@
-/* Add Custom actions to Vane using this javascript file */

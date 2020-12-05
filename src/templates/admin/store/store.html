@@ -18,7 +18,7 @@
     <input type="number" id="worth" name="worth" step="0.01">
     <label for="validity">Expiration Date <br>(leave blank for infinity) </label>
     <input type="date" name="validity" id="validity">
-    <input class="cta " type="submit" formaction="{% url 'vendor:add-coupon' store.name %}" value="Save Coupon">
+    <input class="cta " type="submit" formaction="{% url 'vendor:add-coupon' store.slug %}" value="Save Coupon">
   </form>
   <button class="amber btn btn-sm badge" onclick="hideCouponAdder()"> Close </button>
 </div>
@@ -28,12 +28,12 @@
 
 <div class="">
   <div class="options btn-group">
-    <a href="{% url 'vendor:edit-store' store.name %}" class="btn  btn-sm badge btn-primary"> Edit Store </a>
-    <a href="{% url 'vendor:add-item' store.name %}" class="btn  btn-sm badge btn-brown"> Add Item </a>
+    <a href="{% url 'vendor:edit-store' store.slug %}" class="btn  btn-sm badge btn-primary"> Edit Store </a>
+    <a href="{% url 'vendor:add-item' store.slug %}" class="btn  btn-sm badge btn-brown"> Add Item </a>
     {% if store.is_open %}
     <button onclick="confirmClose()" class="btn badge  btn-sm btn-amber"> Close Store </button>
     {% else %}
-    <a href="{% url 'vendor:open' store.name %}" class="btn badge btn-sm  btn-success"> Open Store </a>
+    <a href="{% url 'vendor:open' store.slug %}" class="btn badge btn-sm  btn-success"> Open Store </a>
     {% endif %}
   </div>
   <div id="close-popup" class="popup-wrapper  d-none text-center">
@@ -41,7 +41,7 @@
       <button class="close" onclick="hideClose()"> <span class="text-white-50"> &times; </span> </button>
       <p class="white-text h6 warning" id="warningClose"> Are you sure you want to close the store? <br>
         It will not be accessible until you open it again. </p>
-      <a href="{% url 'vendor:close' store.name %}" class="btn btn-danger badge btn-sm"> Close Store </a>
+      <a href="{% url 'vendor:close' store.slug %}" class="btn btn-danger badge btn-sm"> Close Store </a>
       <button class="btn btn-amber badge btn-sm" onclick="hideClose()"> Cancel </button>
     </div>
   </div>
@@ -93,7 +93,7 @@
 
 
     <div class="btn-group-sm">
-      <a class="btn badge bg-warning" href="{% url 'vendor:edit-item' store.name item.id %}"> Edit </a>
+      <a class="btn badge bg-warning" href="{% url 'vendor:edit-item' store.slug item.id %}"> Edit </a>
       <button onclick="confirmDelete({{ forloop.counter }})" class="btn bg-danger badge"> Delete </button>
     </div>
 
@@ -112,7 +112,7 @@
         <button class="close" onclick="hideConfirmation({{ forloop.counter }})"> <span class="text-white-50"> &times;
           </span> </button>
         <p class="white-text warning" id="warningDelete"> Are you sure you want to delete this item permanently? </p>
-        <a href="{% url 'vendor:delete-product' store.name item.id %}" class="btn btn-danger badge btn-sm"> Delete </a>
+        <a href="{% url 'vendor:delete-product' store.slug item.id %}" class="btn btn-danger badge btn-sm"> Delete </a>
         <button class="btn btn-amber badge btn-sm" onclick="hideConfirmation({{ forloop.counter }})"> Cancel </button>
       </div>
     </div>

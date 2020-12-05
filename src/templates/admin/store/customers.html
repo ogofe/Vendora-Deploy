@@ -1,4 +1,9 @@
 {% extends './base.html' %}
+{% load static %}
+
+{% block extra_head %}
+  <link rel="Stylesheet" href="{% static 'css/admin/store/table.css' %}">
+{% endblock extra_head %}
 
 {% block content %}
     <style>
@@ -35,10 +40,10 @@
         justify-content: center;
     }
     </style>
-
+{% comment %} 
     <div class=" d-flex justify-content-center">
         <button id="all" type="button" onclick="selectAll()" class=" cta btn badge blue">Select All</button>
-        <button id="cta" type="submit" formtarget="window" formaction="{% url 'vendor:export-contacts' store.name %}" 
+        <button id="cta" type="submit" formtarget="window" formaction="{% url 'vendor:export-contacts' store.slug %}" 
             form="contact-form" class=" cta btn badge amber">  Export 
             <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-file-earmark-spreadsheet" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                 <path fill-rule="evenodd" d="M5 10H3V9h10v1h-3v2h3v1h-3v2H9v-2H6v2H5v-2H3v-1h2v-2zm1 0v2h3v-2H6z"/>
@@ -47,27 +52,53 @@
             </svg>
         </button>
 
-    </div>
+    </div> {% endcomment %}
 
-    <div class="row mt-5 mb-5">
-        <span  class="mb-4"></span>
-
-        <!-- The complete list of contacts in a store -->
-        <form id="contact-form" name="contacts" method="POST" class="row w-100" novalidate="">
-        {% csrf_token %}
-            {% for person in customers %}
-                <div id="card{{forloop.counter}}" onclick="toggleSelect({{ forloop.counter }})" 
-                    class="col-md-4 mt-2 col-sm-6 card mr-1 ml-1 col-lg-3 pt-3 pb-3">
-                    <span class="badge select p-0"> 
-                        <input type="checkbox" name="email" id="check{{forloop.counter}}" aria-checked="false"
+    <div style="margin-left:-15px" class="mt-5 mb-5">
+        <p class="text-muted"> <span id="count">0</span> of {{customers.count}} selected </p>
+        <div class="d-inline">
+            <div class="col-lg-8">
+                <table>
+                    <thead>
+                        <td>
+                            <input type="checkbox" name="_select_all" value={{customers}}>
+                        </td>
                         
-                        onclick="perform({{forloop.counter}})" value={{person.email}} class="check"> 
-                    </span>
-                    <h4 class="name badge blue-grey p-2 mt-2 font-20" > {{ person.name }} </h4>
-                    <h6 class=""> {{ person }} </h6>
-                </div>
-            {% endfor %}
-        </form>
+                        <td>
+                            Contact
+                        </td>
+
+                        <td>
+                            Orders
+                        </td>
+                    </thead>
+
+                    <tbody>
+                        {% for person in customers %}
+                            <td>
+                                <input type="checkbox" name="_contact" value={{person.email}}>
+                            </td>
+
+                            <td class="text-left">
+                                <h6> {{ person.first_name }} {{ person.last_name }} </h6>
+                                <h6> {{ person.email }} </h6>
+                            </td>
+
+                            <td>
+                                {{person.cart}}
+                            </td>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="d-none d-lg-inline ">
+                {% for plugin in plugins %}
+                    <h5> {{plugin}} </h5>
+                {% endfor %}
+            </div>
+        </div>
+
     </div>
 
 

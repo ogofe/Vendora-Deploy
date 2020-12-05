@@ -30,9 +30,9 @@ class AdminStore(admin.ModelAdmin):
 
 class AdminProduct(admin.ModelAdmin):
     model = Product
-    search_fields = ('name', 'store', 'tags')
+    search_fields = ('name', '_store', 'tags')
     list_display = [
-        'store',
+        '_store',
         'name',
         'price',
         'currency',

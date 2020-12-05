@@ -1,5 +1,5 @@
 from store.models import Store, Product, Invoice, Tag, Category, Currency
-from rest_framework.serializers import ModelSerializer
+from rest_framework import serializers
 from django.contrib.auth.models import User
 from accounts.models import Merchant, BillingAddress, ShippingAddress
 from rest_framework.fields import MultipleChoiceField
@@ -7,6 +7,7 @@ from rest_framework.fields import MultipleChoiceField
 
 #           Serializers
 
+ModelSerializer = serializers.ModelSerializer
 
 class CreateUserAPI(ModelSerializer):
     class Meta:
@@ -22,6 +23,14 @@ class UserAPI(ModelSerializer):
         
         
 
+class MerchantCreateAPI(ModelSerializer):
+    profile = User
+    class Meta:
+        model = Merchant
+        fields = ('profile', 'merchant_id', 'phone', 'country',
+                  'bank_name', 'bank_acct_name', 'bank_acct_num')
+        
+        
 class MerchantAPI(ModelSerializer):
     profile = UserAPI()
     class Meta:
@@ -65,8 +74,17 @@ class CreateStoreAPI(ModelSerializer):
 
 class StoreAPI(ModelSerializer):
     owner = MerchantAPI()
-    staff_accounts = [UserAPI()]
+    staff_accounts = serializers.StringRelatedField(many=True)
+    customers = User.objects.all()
+    # customers = serializers.PrimaryKeyRelatedField(queryset=UserAPI())
+    # customers = serializers.RelatedField(queryset=User.objects.all())
+    # customers = serializers.StringRelatedField(many=True)
+    products = serializers.StringRelatedField(many=True)
+    plugins = serializers.StringRelatedField(many=True)
+    coupons = serializers.StringRelatedField(many=True)
     currency = CurrencyAPI()
+    platforms = serializers.StringRelatedField(many=True)
+    payment_methods = serializers.StringRelatedField(many=True)
     class Meta:
         model = Store
         fields ='__all__'
@@ -83,12 +101,13 @@ class ReadUpdateStoreAPI(ModelSerializer):
         
 class ProductAPI(ModelSerializer):
     store = StoreAPI()
-    tags = TagAPI()
-    category = CategoryAPI()
-    sub_cats = CategoriesAPI()
+    category = CategoriesAPI()
+    tags = serializers.StringRelatedField(many=True)
+    sub_cats = serializers.StringRelatedField(many=True)
     class Meta:
         model = Product
-        fields = ('name', 'store', 'price', 'discount_price', 'image', 'quantity', 'description', 'tags', 'category', 'sub_cats',)
+        fields = ('name', 'store', 'price', 'discount_price', 
+                  'image', 'quantity', 'description', 'tags', 'category', 'sub_cats',)
         
         lookup_field = 'id'
         

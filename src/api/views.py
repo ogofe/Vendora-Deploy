@@ -4,6 +4,7 @@ from .serializers import (
     CreateStoreAPI, ReadUpdateStoreAPI,
     StoreAPI, ProductAPI, Loginizer,
     MerchantAPI, serialize_user, 
+    MerchantCreateAPI,
 )
 from rest_framework.viewsets import generics
 from rest_framework.permissions import AllowAny
@@ -96,23 +97,27 @@ class CreateNewStore(generics.CreateAPIView):
 
 #           Store admin views
 
-class StoreInfoView(generics.RetrieveAPIView):
-    queryset = Store.objects.all()
-    serializer_class = StoreAPI
-    lookup_field = 'name'
-    
-    def get_object(self):
-        name = self.kwargs.get('name')
-        return Store.objects.get(name=name)
-
 class StoreBackendView(generics.RetrieveAPIView):
     queryset = Store.objects.all()
     serializer_class = StoreAPI
-    lookup_field = 'name'
+    lookup_field = 'slug'
+        
+    permission_classes = [IsAuthenticated, Is_Merchant_or_Staff]
+
+    # def get_object(self):
+    #     name = self.kwargs.get('slug')
+    #     return Store.objects.get(slug=slug)
+    
+
+class MerchantCreateView(generics.CreateAPIView):
+    model = Merchant
+    serializer_class = MerchantCreateAPI
+    lookup_field = 'id'
     
     # def get_object(self, queryset):
         
-    # permission_classes = [IsAuthenticated, Is_Merchant_or_Staff]
+    permission_classes = [IsAuthenticated]
+    
     
 
 class MerchantView(generics.RetrieveAPIView):
@@ -136,7 +141,7 @@ class StoreFrontView(generics.ListAPIView):
     lookup_field = 'store'
     
     def get_queryset(self, *args, **kwargs):
-        store = Store.objects.get(name=self.kwargs['store'])
+        store = Store.objects.get(slug=self.kwargs['store'])
         queryset = Product.objects.filter(store=store)
         return queryset
     

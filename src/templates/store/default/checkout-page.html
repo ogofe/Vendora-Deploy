@@ -169,7 +169,7 @@
 
               <hr class="mb-4">
               <button class="btn btn-primary btn-lg btn-block b-800" type="submit"
-               formaction="{% url 'store:pay' store.name invoice.number %}">Continue to checkout</button>
+               formaction="{% url 'store:pay' store.slug invoice.number %}">Continue to checkout</button>
 
             </form>
 
@@ -213,7 +213,7 @@
             <div class="input-group">
               <input type="text" class="form-control mx-1 mb-0 ml-0 mr-0" required="true" placeholder="Promo code" name="coupon_code">
               <div class="input-group-append">
-                <button formaction="{% url 'store:redeem-coupon' store.name invoice.number %}" 
+                <button formaction="{% url 'store:redeem-coupon' store.slug invoice.number %}" 
                 class="btn btn-secondary h-95 btn-md waves-effect m-0 b-800" type="submit">Redeem</button>
               </div>
             </div>

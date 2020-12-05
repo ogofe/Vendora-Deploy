@@ -12,17 +12,17 @@ app_name = 'accounts'
 urlpatterns = [
     path('signup/', signup_view, name='signup'),
     path('create/store/', create_user, name='create-user'),
-    path('create/<store_name>/continue/<country>/<currency>/', create_merchant, name='create-merchant'),
-    path('signup/store/<str:store_name>/personalize', personalize, name='personalize'),
-    path('signup/store/<str:store_name>/billing', billing, name='billing'),
-    path('signup/store/<str:store_name>/skip-to-trial', skip_to_free, name='free-trial'),
+    path('create/<slug>/continue/<country>/<currency>/', create_merchant, name='create-merchant'),
+    path('signup/store/<slug>/personalize', personalize, name='personalize'),
+    path('signup/store/<slug>/billing', billing, name='billing'),
+    path('signup/store/<slug>/skip-to-trial', skip_to_free, name='free-trial'),
     path('login/', login_view, name='login'),
     
     path('logout/', logout_view, name='logout'),
     path('error/503/', error503, name='error_503'),
     path('error/signup/failed/', errorNoNet, name='error-noNet'),
     #           Storefront urls
-    path('<str:store_name>/signup/', store_signup_view, name='store-signup'),
-    path('<str:store_name>/login/', store_login_view, name='store-login'),
+    path('<slug>/signup/', store_signup_view, name='store-signup'),
+    path('<slug>/login/', store_login_view, name='store-login'),
 ]
 
