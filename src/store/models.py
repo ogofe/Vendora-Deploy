@@ -113,9 +113,9 @@ class Store(models.Model):
                 _file.write('/* Add Custom actions to %s using this javascript file */\n' % self.name)
                 _file.close()
                 self.custom_js.name = _file.name.replace(path, '')
-            print('Storage of JS FILE : ', self.custom_js.storage)
             # save the changes
             self.is_setup = True
+            self.template_dir = 'default'
             self.save()
         return True
     

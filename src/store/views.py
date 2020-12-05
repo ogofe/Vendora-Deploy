@@ -1,7 +1,6 @@
 import os
 from django.shortcuts import render, redirect
 from django.contrib.auth import logout, login
-from django.contrib.auth.hashers import make_password, PBKDF2PasswordHasher, pbkdf2
 from datetime import datetime
 from django.conf import settings
 from django.views.generic import ListView, DetailView
@@ -17,6 +16,11 @@ from django.contrib import messages
 from random import randint
 from django.core.paginator import Paginator
 from accounts.models import User
+from django.dispatch import Signal
+
+
+
+
 
 BASE_DIR = settings.BASE_DIR
 # User = settings.AUTH_USER_MODEL
@@ -398,6 +402,7 @@ def on_checkout_success(request, slug, invoice_num):
         product.quantity -= item.quantity
         product.save()
     cart.clear()    # empty cart
+    Signal().send(store, ('checkout_completed'))
     return redirect('store:cart-view', store.slug)
 
 
