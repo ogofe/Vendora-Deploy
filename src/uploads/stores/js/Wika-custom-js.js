@@ -1,1 +1,0 @@
-/* Add Custom actions to Wika using this javascript file */

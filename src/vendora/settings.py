@@ -25,7 +25,9 @@ SECRET_KEY = 'ae1#%d3-8#v3dy_+v+c5_!16njdfp57q)ln5z*@l0i=dv8*(wp'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    '*',
+]
 
 
 # Application definition
@@ -48,9 +50,11 @@ INSTALLED_APPS = [
     # third parties
     'rest_framework',
     'corsheaders',
+    # 'django_hosts',
 ]
 
 MIDDLEWARE = [
+    # 'django_hosts.middleware.HostsRequestMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -62,9 +66,20 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     # vendora middleware
     # 'store.middleware.StoreTemplateMiddleware',
+    # 'django_hosts.middleware.HostsResponseMiddleware'   # must be the last!
 ]
 
 ROOT_URLCONF = 'vendora.urls'
+
+# DJANGO HOSTS
+# ROOT_HOSTCONF = 'hosts.hosts'
+
+# PARENT_HOST = 'localhost'
+# # PARENT_HOST = 'vendora.com'
+
+# DEFAULT_HOST = 'intro'
+
+SITE_ID = 1
 
 TEMPLATES = [
     {
@@ -83,6 +98,9 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
+            'builtins':[
+                # 'django_hosts.templatetags.hosts_override',
+            ]
         },
     },
 ]
@@ -162,3 +180,6 @@ CORS_ORIGIN_WHITELIST = [
 ]
 
 #CORS_ORIGIN_ALLOW_ALL = True
+
+
+# LOGIN_REDIRECT_VIEW = 'accounts:super-in'

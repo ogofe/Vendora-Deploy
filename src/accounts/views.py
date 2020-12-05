@@ -19,7 +19,7 @@ def namify(string:str):
 def create_user(request, *args):
     data = request.POST
     user = User(
-        username=namify(data['store_name']),
+        username=namify(data['slug']),
         first_name=data['first_name'],
         last_name=data['last_name'],
         email=data['email'],
@@ -32,12 +32,12 @@ def create_user(request, *args):
     user.save()
     logout(request)
     login(request, user)
-    return redirect('accounts:create-merchant', data['store_name'], data['country'], data['currency'])
+    return redirect('accounts:create-merchant', data['slug'], data['country'], data['currency'])
 
 
 
 @login_required(login_url='accounts:login')
-def create_merchant(request, store_name, country, currency):
+def create_merchant(request, slug, country, currency):
     if not request.method == "POST":
         return render(request, 'admin/auth/setup.html')
     data = request.POST   
@@ -63,11 +63,11 @@ def create_merchant(request, store_name, country, currency):
             bank_acct_num=data['bank_acct_number'],
         )
         merchant.save()
-        store = Store(name=store_name, owner=merchant)
+        store = Store(slug=slug, owner=merchant)
         store.save()    
         store.setup()   # setup the store
-        return redirect('accounts:billing', store.name)
-    return redirect('accounts:error-noNet', store.name)
+        return redirect('accounts:billing', store.slug)
+    return redirect('accounts:error-noNet', store.slug)
 
     
 
@@ -80,15 +80,15 @@ def signup_view(request):
     }
     return render(request, 'admin/auth/sign-up.html', context)
 
-def personalize(request, store_name):
-    store = Store.objects.get(name=store_name)
+def personalize(request, slug):
+    store = Store.objects.get(slug=slug)
     store.Attrs.is_admin_logged_in = True
     if request.method == 'POST':
         store.currency = currency
         if request.POST.get('template'):
             store.Attrs.template = request.POST['template']
         store.save()
-        return redirect('accounts:billing', store.name)
+        return redirect('accounts:billing', store.slug)
     context = {
         'idx':1,    # page index
         'currencies': Currency.objects.all(),
@@ -96,8 +96,8 @@ def personalize(request, store_name):
     }
     return render(request, 'admin/auth/sign-up.html', context)
 
-def billing(request, store_name):
-    store = Store.objects.get(name=store_name)
+def billing(request, slug):
+    store = Store.objects.get(slug=slug)
     store.Attrs.is_admin_logged_in = True
     if request.method == 'POST':
         data = request.POST
@@ -115,7 +115,7 @@ def billing(request, store_name):
         if data.get('opt_address'):
             bill.opt_address=data['address']
         bill.save()
-        return redirect('vendor:store', store_name)
+        return redirect('vendor:store', slug)
     context = {
         'idx':2,    # page index
         'currencies': Currency.objects.all(),
@@ -123,14 +123,14 @@ def billing(request, store_name):
     }
     return render(request, 'admin/auth/sign-up.html', context)
 
-def skip_to_free(request, store_name):
+def skip_to_free(request, slug):
     msg = """
     You have not set billing on your store, you are on free trial.
     Your free trial ends in 7 days after which your store will be deactivated.
     Setup Billing Now to prevent this.
     """
-    link = 'http://localhost:8000/%s/add/billing/' % store.name
-    store = Store.objects.get(name=store_name)
+    link = 'http://localhost:8000/%s/add/billing/' % store.slug
+    store = Store.objects.get(slug=slug)
     alert = Alert(
         priority=1,
         message=msg,
@@ -141,27 +141,27 @@ def skip_to_free(request, store_name):
         cta_link=link
     )
     alert.save()
-    return redirect('vendor:store', store.name)
+    return redirect('vendor:store', store.slug)
 
 # Log Into Store Admin
 def login_view(request):
     if request.method == 'POST':
-        store_name = request.POST['username']
+        name = request.POST['username']
         password = request.POST['password']
         try:     # check if store exists
-            store = Store.objects.get(name=store_name) # get the store by the name requested
+            store = Store.objects.get(name=name) # get the store by the name requested
             if store: # store exists? Yes
-                owner = User.objects.get(email=store.owner.profile.email) # get the store owner's user
-                user = authenticate(request, username=owner.username, password=password)
+                owner = store.owner # get the store owner's user
+                user = authenticate(request, username=owner.profile.username, password=password)
                 if user:
                     login(request, user)
-                    return redirect('vendor:dashboard', store_name)
+                    return redirect('vendor:dashboard', store.slug)
                 else:                
                     for acc in store.staff_accounts.all():
                         staff = authenticate(request, username=acc.username, password=password)
                         if staff in store.staff_accounts.all():
                             login(request, staff)
-                            return redirect('vendor:dashboard', store_name)                            
+                            return redirect('vendor:dashboard', store.slug)                            
                     messages.error(request, 'The Store Name or Password Is Incorrect!')
                     return render(request, 'admin/auth/login.html', {})
             else:
@@ -189,8 +189,8 @@ def logout_view(request):
 
 #+++++++++++ STOREFRONT LOGIN VIEW (AS A SHOPPER) ++++++++++++++++++===
 
-def store_login_view(request, store_name):
-    store = Store.objects.get(name=store_name)
+def store_login_view(request, slug):
+    store = Store.objects.get(slug=slug)
     default_user = request.user
     context = {
         'store' : store,
@@ -206,7 +206,7 @@ def store_login_view(request, store_name):
                 login(request, user)
                 if default_user.has_usable_password() == False:
                     update(request, default_user, user, store)
-                return redirect('store:store-view', store_name)
+                return redirect('store:store-view', slug)
         else:
             messages.error(request, "Incorrect username or password.")
             return render(request, 'admin/auth/store-login.html', context)
@@ -216,8 +216,8 @@ def store_login_view(request, store_name):
 
 #   Storefront signup view
 
-def store_signup_view(request, store_name):
-    store = Store.objects.get(name=store_name)
+def store_signup_view(request, slug):
+    store = Store.objects.get(slug=slug)
     old_user = request.user
     if request.method == 'POST':
         data = request.POST
@@ -236,7 +236,7 @@ def store_signup_view(request, store_name):
                 update(request, old_user, user, store)
             store.customers.add(user)
             store.save()
-        return redirect('store:store-view', store_name)
+        return redirect('store:store-view', slug)
     context = {
         'store': store,
         'title': 'Signup',

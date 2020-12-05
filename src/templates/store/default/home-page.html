@@ -115,13 +115,13 @@
           <!-- Links -->
           <ul class="navbar-nav mr-auto">
             <li class="nav-item active">
-              <a class="nav-link" href="{% url 'store:store-view' store.name %}">All
+              <a class="nav-link" href="{% url 'store:store-view' store.slug %}">All
                 <span class="sr-only">(current)</span>
               </a>
             </li>
             {% for category in store.get_cats %}
               <li class="nav-item">
-                <a class="nav-link" href="{% url 'store:store-view' store.name %}">{{ category }}</a>
+                <a class="nav-link" href="{% url 'store:store-view' store.slug %}">{{ category }}</a>
               </li>
             {% endfor %}
             
@@ -132,7 +132,7 @@
             {% csrf_token %}
             <div class="btn-group md-form my-0">
               <input name="query" class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
-              <input type="submit" class="btn btn-sm green white-text mt-2" formaction="{% url 'store:search-view' store.name %}" value="Go">
+              <input type="submit" class="btn btn-sm green white-text mt-2" formaction="{% url 'store:search-view' store.slug %}" value="Go">
             </div>
           </form>
         </div>
@@ -158,7 +158,7 @@
               <div class="view overlay">
                 <img src={{item.image.url}} class="card-img-top" size="200em"
                   alt="">
-                <a href="{% url 'store:item-view' store.name item.id %}">
+                <a href="{% url 'store:item-view' store.slug item.id %}">
                   <div class="mask rgba-white-slight"></div>
                 </a>
               </div>
@@ -167,12 +167,12 @@
               <!--Card content-->
               <div class="card-body text-center">
                 <!--Category & Title-->
-                <a href="{% url 'store:item-view' store.name item.id %}" class="grey-text">
+                <a href="{% url 'store:item-view' store.slug item.id %}" class="grey-text">
                   <h5>{{item.category|title}}</h5>
                 </a>
                 <h5>
                   <strong>
-                    <a href="{% url 'store:item-view' store.name item.id %}" class="dark-grey-text">{{item.name}}<br />
+                    <a href="{% url 'store:item-view' store.slug item.id %}" class="dark-grey-text">{{item.name}}<br />
                     {% if not item.quantity <= 0 %}
                         {% for tag in item.tags.all %}
                           <span class="badge badge-pill danger-color">{{tag.name|title}}</span>
@@ -198,13 +198,13 @@
               <!--Card content-->
 
               <div class="text-center d-flex justify-content-around mb-4">
-                <a href="{% url 'store:add-to-cart' store.name item.id %}" title="Add {{item}} to your cart"> 
+                <a href="{% url 'store:add-to-cart' store.slug item.id %}" title="Add {{item}} to your cart"> 
                   <svg width="1.7em" height="1.7em" viewBox="0 0 16 16" class="bi text-red bi-cart-plus-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                     <path fill-rule="evenodd" d="M.5 1a.5.5 0 0 0 0 1h1.11l.401 1.607 1.498 7.985A.5.5 0 0 0 4 12h1a2 2 0 1 0 0 4 2 2 0 0 0 0-4h7a2 2 0 1 0 0 4 2 2 0 0 0 0-4h1a.5.5 0 0 0 .491-.408l1.5-8A.5.5 0 0 0 14.5 3H2.89l-.405-1.621A.5.5 0 0 0 2 1H.5zM4 14a1 1 0 1 1 2 0 1 1 0 0 1-2 0zm7 0a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM9 5.5a.5.5 0 0 0-1 0V7H6.5a.5.5 0 0 0 0 1H8v1.5a.5.5 0 0 0 1 0V8h1.5a.5.5 0 0 0 0-1H9V5.5z"/>
                   </svg>
                 </a>
 
-                <a href="{% url 'store:add-to-wish' store.name item.id %}" title="Add {{item}} to your wish list" class="mt-1"> 
+                <a href="{% url 'store:add-to-wish' store.slug item.id %}" title="Add {{item}} to your wish list" class="mt-1"> 
                   <svg width="1.4em" height="1.4em" viewBox="0 0 16 16" class="bi bi-heart-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                     <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"/>
                   </svg>

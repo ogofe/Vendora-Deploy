@@ -53,7 +53,7 @@
     <div class="container">
 
       <!-- Brand -->
-      <a class="navbar-brand waves-effect" href="{% url 'store:store-view' store.name %}">
+      <a class="navbar-brand waves-effect" href="{% url 'store:store-view' store.slug %}">
         <strong class="blue-text">{{ store.name }}</strong>
       </a>
 
@@ -68,7 +68,7 @@
         <!-- Left -->
         <ul class="navbar-nav mr-auto">
           <li class="nav-item active">
-            <a class="nav-link waves-effect" href="{% url 'store:store-view' store.name %}">Home
+            <a class="nav-link waves-effect" href="{% url 'store:store-view' store.slug %}">Home
               <span class="sr-only">(current)</span>
             </a>
           </li>
@@ -80,12 +80,12 @@
           {% if user.has_usable_password %}
           {% else %}
             <li class="nav-item mr-3 amber">
-            <a href="{% url 'accounts:store-signup' store.name %}" class="nav-link waves-effect white-text">
+            <a href="{% url 'accounts:store-signup' store.slug %}" class="nav-link waves-effect white-text">
               <span class="clearfix d-sm-inline-block"> Sign up </span>
             </a>
           </li>
             <li class="nav-item mr-3 blue-grey">
-            <a href="{% url 'accounts:store-login' store.name %}" class="nav-link waves-effect white-text">
+            <a href="{% url 'accounts:store-login' store.slug %}" class="nav-link waves-effect white-text">
               <span class="clearfix d-sm-inline-block"> Login </span>
             </a>
           </li>
@@ -94,7 +94,7 @@
           <li class="nav-item mr-3">
             <a class="nav-link waves-effect cart" 
               {% if store.has_products %}
-                href="{% url 'store:cart-view' store.name %}"
+                href="{% url 'store:cart-view' store.slug %}"
               {% endif %}>
               <span class="badge red badge-pill z-depth-1 mr-1 count">
                 {{ cart.count }}
@@ -110,7 +110,7 @@
           <li class="nav-item ml-3">
             <a class="nav-link waves-effect wish" 
               {% if store.has_products %}
-                href="{% url 'store:wish-view' store.name %}"
+                href="{% url 'store:wish-view' store.slug %}"
               {% endif %}>
               <span class="badge red badge-pill z-depth-1 mr-1 count">
                 {{ wish.count }}
@@ -165,7 +165,7 @@
     <!--Copyright-->
     <div class="footer-copyright py-3">
       © 2019 Copyright:
-      <a href="{% url 'store:store-view' store.name %}" target="_blank"> {{store.name}}.com </a>
+      <a href="{% url 'store:store-view' store.slug %}" target="_blank"> {{store.name}}.vendora.com </a>
     </div>
     <!--/.Copyright-->
 

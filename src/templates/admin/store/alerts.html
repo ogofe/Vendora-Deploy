@@ -1,4 +1,9 @@
 {% extends './base.html' %}
+{% load static %}
+
+{% block extra_head %}
+  <link rel="Stylesheet" href="{% static 'css/admin/store/table.css' %}">
+{% endblock extra_head %}
 
 {% block content %}
 <style>
@@ -15,6 +20,39 @@
         top: 0;
         left: 0;
     }
+
+    .cta.badge{
+        position: relative !important;
+    }
+
+    table{
+        width: 100%;
+    }
+
+    td {
+        padding: .5em;
+        background-color: #697077;
+        border: 1px solid #4e5554;
+        color: whitesmoke;
+        text-align: center;
+    }
+
+    #go{
+        padding: .3em .7em;
+        background-color: #697077;
+        border: 0;
+        border-radius: 4px;
+        color: white;
+    }
+
+    .input{
+        cursor: pointer;
+    }
+
+    .w-inherit{
+        width: inherit;
+    }
+
     .info {
 	height: 400px;
 	margin-top: 24vh;
@@ -25,7 +63,73 @@
     }
 </style>
 
-{% if alerts %}
+<div id="" class="mt-5">
+    <div id="actions" class="m-auto border p-2 row">
+        <div id="" class="col-12 col-lg-6 d-flex justify-content-around  mb-2 mb-lg-0 ">
+            <label for="action" class="">Action:</label>
+            <select form="alert-form" id="action" name="_action" class="w-inherit">
+                <option selected="true"></option>
+                <option name="_action" value="mark_as_read"> Mark selected alerts as read </option>
+                <option name="_action" value="delete"> Delete selected alerts </option>
+            </select>
+            <button form="alert-form" formaction="{% url 'vendor:alert-action' store.slug %}" class="" id="go" type="submit">Go</button>
+        </div>
+
+        <div class="col-12 col-lg-6 d-flex justify-content-around">
+            <label for="query">Search:</label>
+            <input type="search" class="w-inherit" name="query" id="query">
+        </div>
+    </div>
+
+    <div id="alerts" class="mt-3">
+        <form method="POST" novalidate="" id="alert-form">
+            {% csrf_token %}
+            <table>
+                <thead>
+                    <td>
+                        <input type="checkbox" name="ids" value="{{alerts}}" class="input " id="select-all">
+                    </td>
+                    <td>
+                        <a> Priority </a> 
+                    </td>
+                    <td class="d-none d-lg-table-cell">
+                        <a> From </a> 
+                    </td>
+                    <td>
+                        <a> Message </a> 
+                    </td>
+                    <td class="d-none d-lg-table-cell">
+                        <a> Date / Time </a> 
+                    </td>
+                </thead>
+
+                <tbody>
+                    {% for alert in alerts %}
+                    <tr>
+                        <td>
+                            <input type="checkbox" name="_alert_id" class="input alert_id" value="{{alert.id}}">
+                        </td>
+                        <td>
+                            {{alert.get_priority_display}}
+                        </td>
+                        <td class="text-left d-none d-lg-table-cell">
+                            {{alert.sender}}
+                        </td>
+                        <td class="text-left">
+                            <a>{{alert.subject}}</a>
+                        </td>
+                        <td class=" d-none d-lg-table-cell">
+                            <a>{{alert.date.date}} <!--| {{alert.date.time}}--></a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </form>
+    </div>
+</div>
+
+{% comment %} {% if alerts %}
 <div class="mt-5 row">
     {% for alert in alerts %}
         <div class="alert card col-md-5 pb-3">
@@ -50,7 +154,7 @@
     </div>
 </div>
 
-{% endif %}
+{% endif %} {% endcomment %}
 
 {% endblock content %}
 
@@ -58,6 +162,7 @@
 <script>
   document.getElementById('alerts-link').style.backgroundColor = 'black';
   document.getElementById('page-main').classList.add('container');
+  document.querySelector('.container-fluid').classList.remove('container-fluid')
 </script>
 
 {% endblock active %}

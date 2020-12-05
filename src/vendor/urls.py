@@ -6,7 +6,7 @@ from .views import (
     customers_view, alerts_view, integrations_view,
     reports_view, export_contacts, edit_store_view,
     close_alert, settings_view, create_coupon,
-    edit_product,
+    edit_product, alert_action,
 )
 
 app_name = 'vendor'
@@ -27,7 +27,8 @@ urlpatterns = [
     path('item/<int:item_id>/delete/', delete_product, name='delete-product'),
     path('action/close/', close_store, name='close'),
     path('action/close/', close_store, name='close'),
-    path('action/alert/<int:alert_id>/delete/', close_alert, name='close-alert'),
+    path('action/alert/', alert_action, name='alert-action'),
+    # path('action/alert/delete/', close_alert, name='close-alert'),
     path('action/create/coupon/', create_coupon, name='add-coupon'),
     path('action/open/', open_store, name='open'),
     path('action/create-product/', create_product, name='create-product'),

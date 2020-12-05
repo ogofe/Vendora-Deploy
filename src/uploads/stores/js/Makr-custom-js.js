@@ -1,1 +1,0 @@
-/* Add Custom actions to Makr using this javascript file */

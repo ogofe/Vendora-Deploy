@@ -32,7 +32,7 @@ class Is_Merchant(BasePermission):
 
 class Is_Merchant_or_Staff(BasePermission):
     def has_object_permission(self, request, view, obj, **kwargs):
-        store = Store.objects.get(name=view.kwargs['name'])        
+        store = Store.objects.get(slug=view.kwargs['slug'])        
         if request.user in store.staff_accounts.all():
             return True
         return False
@@ -40,7 +40,7 @@ class Is_Merchant_or_Staff(BasePermission):
     
      
     def has_permission(self, request, view, **kwargs):
-        store = Store.objects.get(name=view.kwargs['name'])        
+        store = Store.objects.get(slug=view.kwargs['slug'])        
         if request.user in store.staff_accounts.all():
             return True
         return False

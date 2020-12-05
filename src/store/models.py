@@ -47,7 +47,6 @@ class Store(models.Model):
     date_opened     = models.DateField(auto_now=True)
     staff_limit     = models.IntegerField(default=2)
     products        = models.ManyToManyField('Product', blank=True, related_name='products')
-    alerts          = models.ManyToManyField('vendor.Alert', blank=True, related_name='alerts')
     customers       = models.ManyToManyField(User, blank=True, related_name='customers')
     carousel        = models.ManyToManyField('CarouselItem', blank=True, related_name='carousel')
     platforms       = models.ManyToManyField('Social', blank=True, related_name='platforms')
@@ -64,6 +63,7 @@ class Store(models.Model):
     is_open         = models.BooleanField(default=True)
     blocked         = models.BooleanField(default=False)
     is_setup        = models.BooleanField(default=False)
+    slug            = models.SlugField(blank=True)
     
     class Attrs:
         newly_created = True
@@ -73,12 +73,17 @@ class Store(models.Model):
         refresh = ''
         api_public =  ''
         api_private = ''
+
+    def get_absolute_url(self):
+        return reverse("store:store-view", kwargs={"slug": self.slug})
+    
         
     def _products(self):
         return self.products.all()
 
     def setup(self):
-        self.install_default_plugins()        
+        self.install_default_plugins()      
+        self.slug = self.slugify()  
         # if the store was accidentaly marked for setup
         # don't  overwrite it's files
         path = str(settings.MEDIA_ROOT)
@@ -108,12 +113,17 @@ class Store(models.Model):
                 _file.write('/* Add Custom actions to %s using this javascript file */\n' % self.name)
                 _file.close()
                 self.custom_js.name = _file.name.replace(path, '')
-            print('Storage of JS FILE : ', self.custom_js.storage)
             # save the changes
             self.is_setup = True
+            self.template_dir = 'default'
             self.save()
         return True
     
+
+    def slugify(self):
+        "fill the slug field with a generated slug"
+        slug = self.name.lower().replace(' ', '_').replace("'", '-')
+        return slug
 
     def install_default_plugins(self):
         "Installs the default plugins to a store"
@@ -228,17 +238,6 @@ class Social(models.Model):
     def __str__(self):
         return self.type.title()
     
-
-# class Carousel(models.Model):
-#     store = models.ForeignKey('Store', on_delete=models.CASCADE)
-#     header = models.CharField(max_length=300)
-#     items = models.ManyToManyField('CarouselItem', blank=True, related_name='items')
-#     hidden = models.BooleanField(default=False)
-#     class Attrs:
-#         background = 'default'
-#         font = 'default'
-#         font_size = 'default'
-
 class CarouselItem(models.Model):
     store = models.ForeignKey('Store', on_delete=models.CASCADE, related_name='store')
     caption = models.CharField(max_length=50, blank=True, null=True)
@@ -375,7 +374,6 @@ class WishItem(models.Model):
     
 
 class Product(models.Model):
-    store = models.ForeignKey('Store', on_delete=models.CASCADE)
     name = models.CharField(max_length=50)
     image = models.FileField(upload_to='stores/products')
     price = models.DecimalField(decimal_places=2, max_digits=10)
@@ -387,6 +385,9 @@ class Product(models.Model):
     category = models.ForeignKey('Category', on_delete=models.CASCADE, related_name='category')
     sub_cats = models.ManyToManyField('Category', blank=True)
     tags = models.ManyToManyField('Tag', blank=True)
+
+    def _store(self):
+        return self.store
 
     def __str__(self):
         return self.name

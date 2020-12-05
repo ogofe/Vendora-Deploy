@@ -1,3 +1,14 @@
+.bg-dark-blue{
+    background-color: #08001a;
+}
+
+.bg-store{
+    background-image:url('../../img/jpg/online-store.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: right;
+}
+
 #intro{
     padding: 5em 1.5em;
 }
